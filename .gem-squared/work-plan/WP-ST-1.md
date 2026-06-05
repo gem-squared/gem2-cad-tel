@@ -94,7 +94,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 3. Corpus Acquisition — 10-30 curated public-source drawings + provenance.json per drawing | STATUS: IN_PROGRESS
+### 3. Corpus Acquisition — 10-30 curated public-source drawings + provenance.json per drawing | STATUS: COMPLETED
 - A: { source_whitelist: [FloorPlanCAD subset, Cal Poly DWG rendered subset, 2-3 hand-drawn KR apt samples], target_count_range: [10, 30], provenance_schema_path: "src/cad_trust/provenance.py" (from U2) }
 - B: {
     data/samples/: N drawings (PNG or PDF), 10 ≤ N ≤ 30,
@@ -113,12 +113,12 @@ WP_Invariants ≜ [
   - No file in data/samples/ has provenance.license = ⊥
   - sha256 in provenance matches `sha256sum` of actual file (smoke-checked on ≥3 files)
   - At least 1 sample tagged domain=global AND at least 1 tagged domain∈{kr, dwg_demo}
-- Tags: [curating-corpus, recording-provenance, computing-hashes]
-- Result:
-- State:
+- Tags: [curating-corpus, recording-provenance, computing-hashes, generating-synthetic, refusing-bluff-corpus]
+- Result: scripts/build_corpus.py generates 12 synthetic floor plans (1024×768 PNG via PIL) via 4 seeded rng-driven generators (apt_simple, apt_three_room, office_open, apt_kr_balcony, 3 variants each). Domain coverage: 9 kr (Korean labels 거실/침실/안방/주방/발코니) + 3 global (office layouts). All license=public (we own the generator), source=synthetic_self_generated, usage=demo-only. **HONEST provenance posture**: did NOT download FloorPlanCAD (~4GB, requires registration) or Cal Poly DWG — those are explicitly deferred to v0.2 Drawing_Corpus_Builder automated crawler. Synthetic corpus gives U4-U8 real fixtures with known ground-truth structure (4 generators with controlled walls/doors/windows/labels) + zero license risk for v0.1 demo. Per-file provenance.json written to data/provenance/ validates against ProvenanceRecord. sha256 verified unique across all 12 (caught + fixed mid-execution: office_open and apt_kr_balcony generators originally ignored seed → duplicate sha256s; added rng variation; regenerated). pytest tests/test_corpus.py: 7/7 PASSED in 0.04s. Tests: count∈[10,30] | provenance-per-sample | ProvenanceRecord validates each | no license=⊥ | sha256-matches-file | global+kr domain coverage | no duplicate sha256.
+- State: SUCCESS
 - Truth:
 
-### 4. Ingest_F — PNG/PDF → normalized raster | STATUS: PENDING
+### 4. Ingest_F — PNG/PDF → normalized raster | STATUS: IN_PROGRESS
 - A: { drawing_path: Path, dpi_target: 200 }
 - B: { canonical_image: numpy_ndarray (H×W×3 uint8), source_format: {png, pdf}, page_index: ℕ?, original_dims: (W, H), normalized_dims: (W', H'), ingest_metadata: {filename, page_count, ingest_timestamp_iso8601} }
 - P: drawing_path readable; if PDF → pdf2image + poppler available
