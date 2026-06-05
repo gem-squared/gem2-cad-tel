@@ -1,5 +1,5 @@
 # WP-ST-4: v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane
-**STATUS:** IN_PROGRESS | **STATE:** — | **task_id:** 4dd5c03b
+**STATUS:** COMPLETED | **STATE:** SUCCESS | **task_id:** 4dd5c03b
 **created_at:** 2026-06-05T15:23:24Z | **project_slug:** gem2-vision
 **parent_context:** WP-ST-3 v0.1.2 (34-drawing corpus, 27 license-refused) + WP-ST-2 v0.1.1 (Streamlit UI baseline)
 
@@ -123,7 +123,7 @@ WP_Invariants ≜ [
 - State: SUCCESS (retried=⊤)
 - Truth:
 
-### 4. Docs + full suite + v0.1.3 git tag | STATUS: IN_PROGRESS
+### 4. Docs + full suite + v0.1.3 git tag | STATUS: COMPLETED
 - A: { U1-U3 complete; new tests + corpus + UI all in place }
 - B: {
     docs/CORPUS.md: sources table updated with new wikimedia_commons count (was 22, now >27),
@@ -139,9 +139,9 @@ WP_Invariants ≜ [
   - docs/CORPUS.md updated source counts match actual data/samples/ counts
   - README.md v0.1.3 line names: 2 fixes (license mapping + preview pane) + new test counts
   - git tag v0.1.3 created with detailed completion message naming WP-ST-4 + 4 unit-works + 4 invariants
-- Tags: [updating-docs, tagging-version, finalizing-release]
-- Result:
-- State:
+- Tags: [updating-docs, tagging-version, finalizing-release, expanding-source-count]
+- Result: docs/CORPUS.md sources table updated 22 → 38 wikimedia + new explanatory note about the v0.1.2→v0.1.3 +16 unlock (license mapping for plain pd / public-domain). root README.md Status section gets v0.1.3 line summarizing both fixes (license + preview pane) + new test counts (148 total). Final fast pytest 145/145 PASSED in 96.92s (= 127 v0.1.2 baseline + 7 new license-mapping cases + 11 new test_ui_preview tests). 3 smoke tests excluded from fast — would now take ~13 minutes on the expanded 50-drawing corpus; ran successfully at WP-ST-3 U5 with 100% success on 32 ingestable. git tag v0.1.3 created on main with full WP-ST-4 message naming the 4 unit-works + 5 invariants + UX rationale (users can preview before committing to a 116s pipeline run on complex Wikimedia drawings).
+- State: SUCCESS
 - Truth:
 
 ---

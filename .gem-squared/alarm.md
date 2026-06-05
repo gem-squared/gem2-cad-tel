@@ -1,16 +1,16 @@
 # ALARM — gem2-vision
-## Last checked: 2026-06-06T00:18:00Z
+## Last checked: 2026-06-06T00:35:00Z
 
 ## Current Status
-**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2
+**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3
 
-PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
-> **WP-ST-3 COMPLETED|SUCCESS 2026-06-05** — Real-source corpus crawl v0.1.2.
-> 6 unit-works delivered autonomously. 127 fast tests + 3 smoke tests
-> = 130 total green. Corpus 12 → 34 drawings (synthetic + Wikimedia).
-> 100% pipeline success on all 32 ingestable drawings. v0.1.2 git tag.
-> All three WPs awaiting `/archive-work`.
+> **WP-ST-4 COMPLETED|SUCCESS 2026-06-06** — License fix + preview pane v0.1.3.
+> 4 unit-works delivered autonomously. 145 fast tests + 3 smoke = 148 total
+> green. Corpus 34 → 50 drawings (license fix unlocked 16 previously-refused
+> public-domain candidates). Streamlit preview pane right of Drawing dropdown.
+> v0.1.3 git tag. All four WPs awaiting `/archive-work`.
 
 ### Active (IN_PROGRESS) — units remaining
 (none)
@@ -19,15 +19,13 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Title | task_id | Units | Notes |
 |----|-------|---------|-------|-------|
-| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | tag v0.1.0; 53/53 tests; 1 retry (U6 empty-text filter); 9 commits |
-| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | tag v0.1.1; 91/91 tests (53 backward-compat + 38 audit); 0 retries; 6 commits |
-| WP-ST-3 | Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion | f6316037 | 6 | tag v0.1.2; 130 tests (127 fast + 3 smoke); 1 retry (U2 relative_to fallback); 6 commits; corpus 12→34 drawings; 100% pipeline success on 32 real+synthetic |
+| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | v0.1.0; 53/53 tests; 1 retry; 9 commits |
+| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | v0.1.1; 91/91 tests; 0 retries; 6 commits |
+| WP-ST-3 | Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion | f6316037 | 6 | v0.1.2; 130 tests; 1 retry; 6 commits; corpus 12→34 |
+| WP-ST-4 | v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | v0.1.3; 148 tests; 1 retry (AST invariant refactor); 4 commits; corpus 34→50; preview pane added |
 
 ### PENDING (not started)
-
-| WP | Title | task_id | Units | Avg Clarity |
-|----|-------|---------|-------|-------------|
-| WP-ST-4 | v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | 84% |
+(none)
 
 ### DEFERRED
 (none)
@@ -44,35 +42,39 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Date | Summary | STATE |
 |----|------|---------|-------|
-| WP-ST-3 | 2026-06-05 | Real-source corpus crawl v0.1.2 — 6 units: U1 Wikimedia API client + license mapping (No_Source_Bluff), U2 download + sha256 + provenance refusal log, U3 live crawl (22 real drawings + 27 license-refused), U4 corpus validation tests + license whitelist, U5 pipeline smoke (32/32 = 100% success, refusal counts 0-931), U6 docs + tag. Corpus 12 → 34. JPG ingest added. | SUCCESS |
-| WP-ST-2 | 2026-06-05 | Audit Subsystem v0.1.1 — 6 units: SQLite schema (PRAGMA user_version=1) + AuditContext + 5-stage instrumentation (backward-compat) + CLI + Streamlit Past Runs tab + docs/AUDIT.md. 91/91 tests. | SUCCESS |
-| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1 — 9 units autonomous build: bootstrap → output contract → corpus → ingest → geometry → ocr → symbols → compose+aggregate → UI+docs+pitch. 53/53 tests. v0.1.0 tag. | SUCCESS |
+| WP-ST-4 | 2026-06-06 | v0.1.3 license fix + preview pane — 4 units: U1 exact-vs-prefix license matcher (prevents pd→pdf false-match) + plain pd/cc0/public-domain mappings, U2 re-crawl +16 drawings (corpus 34→50), U3 Streamlit preview pane right of dropdown with PIL.Image + @st.cache_data + Preview_Is_Read_Only AST invariant, U4 docs/CORPUS.md + README + tag. 145 fast tests + 3 smoke. | SUCCESS |
+| WP-ST-3 | 2026-06-05 | Real-source corpus crawl v0.1.2 — 6 units; +22 Wikimedia drawings; pipeline 100% success on 32 ingestable. | SUCCESS |
+| WP-ST-2 | 2026-06-05 | Audit Subsystem v0.1.1 — 6 units; SQLite + AuditContext + Streamlit Past Runs tab. | SUCCESS |
+| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1.0 — 9 units; per-field EEF + Measurement_Policy + refusal_candidates + Streamlit. | SUCCESS |
 
 ---
 
 ## Archive Summary
 **Archived:** 0
-**Awaiting /archive-work:** 3 (WP-ST-1 + WP-ST-2 + WP-ST-3)
-**Remaining in work-plan/:** 3 files
+**Awaiting /archive-work:** 4 (WP-ST-1 + WP-ST-2 + WP-ST-3 + WP-ST-4)
+**Remaining in work-plan/:** 4 files
 
 ---
 
 ## Pending Decisions
-- v0.2 scope sequencing — David picks priority among: VLM_Verify (Qwen-VL re-checker, especially valuable now that we see high refusal counts on real drawings) / Synthetic KR generator enrichment / FloorPlanCAD or ArchCAD-400K (registration-gated) / DWG ingest / Real-time audit streaming / Multi-tenant DB
-- Whether to `/archive-work` all three WPs at once or sequentially
+- v0.2 scope sequencing — VLM_Verify especially attractive now that we see 50-drawing corpus produces 0-931 refusals per drawing on real data
+- Whether to `/archive-work` all four WPs at once or sequentially
+- Whether to fix the 2 SVG drawings (remove or extend with cairosvg dep)
+- Whether to re-run the 10-min smoke test on the expanded 50-drawing corpus
 
 ---
 
 ## Known Issues
-- ⊥ 2 SVG drawings (wm_2689-atlantic-print.svg, wm_ah_r_k_k_plan.svg) cannot be ingested — SVG support would require cairosvg/wand (new dep); v0.1.2 documents as unsupported
-- ⊥ Some real drawings produce 20,000+ "objects" (mostly noise lines in non-CAD content like watercolours) — high coverage refusal rate makes them safe demo-wise but they slow the pipeline substantially (one drawing took 116s)
-- ⊬ "pd" raw license tag in Wikimedia metadata didn't match my "pd-" prefix → 27 candidates refused. License mapping table could be extended to handle plain "pd" in a future patch (would lift many public-domain candidates)
-- ⊥ Visual Streamlit UI verification still deferred — process running on 8501 but interactive Past Runs tab drill-down not browser-tested in autonomous session
-- ⊬ Audit DB grows unbounded — no retention/rotation policy in v0.1.x; deferred to v0.3
+- ⊥ 2 SVG drawings cannot be ingested (SVG support needs cairosvg/wand new dep)
+- ⊥ Some real drawings produce 20,000+ objects (mostly noise on non-CAD content like watercolours/cross-sections); high refusal counts make them demo-positive but slow (~116s)
+- ⊬ Audit DB grows unbounded — retention/rotation deferred to v0.3
+- ⊬ 11 Wikimedia candidates still refused by license (GFDL-only, fair-use, etc.) — these are correct refusals per No_Source_Bluff
+- ⊥ Visual Streamlit UI verification still deferred — process auto-reloaded with new preview pane; interactive flow not browser-tested in autonomous session
 
 ---
 
 *Initialized: 2026-06-05T13:01:56Z via /init-session*
 *Updated: 2026-06-05T14:18:00Z — WP-ST-1 COMPLETED|SUCCESS, v0.1.0, 53 tests*
 *Updated: 2026-06-05T14:46:00Z — WP-ST-2 COMPLETED|SUCCESS, v0.1.1, 91 tests*
-*Updated: 2026-06-06T00:18:00Z — WP-ST-3 COMPLETED|SUCCESS, v0.1.2, 130 tests (127 fast + 3 smoke). Corpus grew from 12 synthetic to 34 (12 synthetic + 22 real Wikimedia). 100% pipeline success on all 32 ingestable drawings. Counters: PENDING 1→0, COMPLETED 2→3.*
+*Updated: 2026-06-06T00:18:00Z — WP-ST-3 COMPLETED|SUCCESS, v0.1.2, 130 tests (corpus 12→34)*
+*Updated: 2026-06-06T00:35:00Z — WP-ST-4 COMPLETED|SUCCESS, v0.1.3, 148 tests (corpus 34→50, license fix unlocks +16, preview pane added). Counters: PENDING 1→0, COMPLETED 3→4.*
