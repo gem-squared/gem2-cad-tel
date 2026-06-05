@@ -4,7 +4,7 @@
 ## Current Status
 **Branch:** main  |  **Tag:** v0.1.0
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
 > **WP-ST-1 COMPLETED|SUCCESS 2026-06-05** — CAD Trust Engine Lite v0.1.0
 > for 포비콘 application MVP. 9 unit-works delivered autonomously in single
@@ -20,7 +20,10 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | All units COMPLETED|SUCCESS, 1 retry (U6 empty-text filter), 9 commits, tagged v0.1.0, 53/53 tests green |
 
 ### PENDING (not started)
-(none)
+
+| WP | Title | task_id | Units | Avg Clarity |
+|----|-------|---------|-------|-------------|
+| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite-backed audit/logging for all critical pipeline paths | 09750a81 | 6 | 87% |
 
 ### DEFERRED
 (none)
