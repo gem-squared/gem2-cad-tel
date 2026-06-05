@@ -1,5 +1,5 @@
 # WP-ST-3: Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion
-**STATUS:** IN_PROGRESS | **STATE:** — | **task_id:** f6316037
+**STATUS:** COMPLETED | **STATE:** SUCCESS | **task_id:** f6316037
 **created_at:** 2026-06-05T14:54:02Z | **project_slug:** gem2-vision
 **parent_context:** WP-ST-1 v0.1.0 (synthetic baseline of 12 drawings) + WP-ST-2 v0.1.1 (audit subsystem); 91 tests passing at HEAD
 
@@ -170,7 +170,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 6. Docs + .gitignore + full suite + v0.1.2 git tag | STATUS: IN_PROGRESS
+### 6. Docs + .gitignore + full suite + v0.1.2 git tag | STATUS: COMPLETED
 - A: { U1-U5 complete }
 - B: {
     docs/CORPUS.md updated with: crawl strategy (Wikimedia primary), source breakdown (synthetic + crawled), license discipline reiterated, link to scripts/crawl_corpus.py + crawl_summary.json,
@@ -188,9 +188,9 @@ WP_Invariants ≜ [
   - root README.md mentions v0.1.2 with combined corpus size + crawl note
   - `pytest` exits 0 with all tests green (no regressions)
   - `git tag v0.1.2` exists on main with descriptive message naming WP-ST-3 + source breakdown
-- Tags: [updating-docs, finalizing-release, tagging-version]
-- Result:
-- State:
+- Tags: [updating-docs, finalizing-release, tagging-version, removing-tracked-runtime-state]
+- Result: docs/CORPUS.md extended with "Crawl strategy (v0.1.2)" section (Wikimedia API command, license mapping table, polite_crawling parameters, sources table showing 12 synthetic + 22 wikimedia = 34 total) + "Empirical coverage on real drawings (WP-ST-3 U5)" section (100% success rate, refusal count variance 0 on synthetic vs 2-931 on real). .gitignore extended with .gem-squared/crawl_summary.json. **Caught + fixed mid-execution**: crawl_summary.json was accidentally git-tracked from the earlier crawl commit — used `git rm --cached` to detach. root README.md Status section now shows v0.1.0 → v0.1.1 → v0.1.2 progression with concrete deltas (corpus 12 → 34, +6 units, +39 tests, JPG support, refusal-counts-on-real summary). Fast pytest 127/127 PASSED in 96.74s (91 baseline + 23 client + 6 download + 7 corpus_crawl); 3 smoke tests excluded from fast run (10-min runtime, ran at U5 with 100% success). git tag v0.1.2 created on main with full WP-ST-3 message naming all 6 unit-works + 6 invariants + empirical refusal/object count ranges.
+- State: SUCCESS
 - Truth:
 
 ---
