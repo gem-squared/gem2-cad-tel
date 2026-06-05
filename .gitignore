@@ -1,0 +1,66 @@
+# Build output
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Runtime state
+/.run/
+/temp/
+temp/
+temp/*
+
+# Test
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+*.pem
+*.key
+
+# gem2 local state (not tracked)
+.gem-squared/work-plan/*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Virtualenv
+.venv/
+venv/
+.python-version
+
+# PaddleOCR model cache
+.paddleocr/
+~/.paddleocr/
+
+# Streamlit
+.streamlit/secrets.toml

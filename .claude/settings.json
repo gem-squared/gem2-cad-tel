@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash(mkdir *)",
+      "Bash(date *)",
+      "Bash(git *)",
+      "Bash(mv *)",
+      "Bash(ls *)",
+      "Bash(uuidgen *)"
+    ]
+  }
+}
