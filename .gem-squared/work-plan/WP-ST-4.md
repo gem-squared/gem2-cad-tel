@@ -82,7 +82,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 3. Streamlit preview pane + helpers + UI tests | STATUS: IN_PROGRESS
+### 3. Streamlit preview pane + helpers + UI tests | STATUS: COMPLETED
 - A: { ui/app.py with existing 2-tab layout from WP-ST-2 U5 }
 - B: {
     NEW preview helpers in ui/app.py (or ui/preview.py if cleaner):
@@ -118,12 +118,12 @@ WP_Invariants ≜ [
   - ui/app.py syntactically valid Python (compile check)
   - Run Engine tab layout shows two side-by-side columns (dropdown left, preview right)
   - Preview_Is_Read_Only: no calls to run_pipeline, init_audit_db, or AuditContext from preview path (verified by grep in test)
-- Tags: [adding-preview-pane, caching-image-bytes, refactoring-ui-layout]
-- Result:
-- State:
+- Tags: [adding-preview-pane, caching-image-bytes, refactoring-ui-layout, ast-checking-invariant]
+- Result: ui/app.py extended with 4 preview helpers (_load_preview_image_impl pure function; _load_preview_image_cached wrapped in @st.cache_data with (path_str, mtime, max_width) cache key; load_preview_image public wrapper; preview_status_message returns SVG-specific text). Supports .png/.jpg/.jpeg via PIL.Image.open + RGB convert + thumbnail((400, 800), LANCZOS); .pdf via pdf2image.convert_from_path(dpi=72, first_page=1, last_page=1); SVG / missing / unsupported → returns None (caption surfaces "preview unavailable"). Run Engine tab layout REFACTORED from st.columns([1, 3]) to st.columns([2, 3]) — picker left, preview right. Dropdown now includes png/pdf/jpg/jpeg/svg files. Upload widget accepts png/jpg/jpeg/pdf. **Retry-1 fix** (caught + fixed): original Preview_Is_Read_Only invariant test split file by section header and grepped for forbidden tokens — would false-positive on the module-level `from cad_trust.pipeline import run as run_pipeline` import. Refactored to AST visitor that walks each preview helper function body and inspects only Call nodes; module-level imports correctly ignored. pytest tests/test_ui_preview.py 11/11 PASSED in 0.95s: PIL.Image returned for PNG/JPG/PDF; None for SVG/nonexistent; status_message for SVG/missing/PNG; @st.cache_data wrapping verified via marker attrs; AST invariant check on 4 preview helper bodies; ui/app.py compile() smoke. Streamlit on port 8501 hot-reloads (HTTP 200 confirmed).
+- State: SUCCESS (retried=⊤)
 - Truth:
 
-### 4. Docs + full suite + v0.1.3 git tag | STATUS: PENDING
+### 4. Docs + full suite + v0.1.3 git tag | STATUS: IN_PROGRESS
 - A: { U1-U3 complete; new tests + corpus + UI all in place }
 - B: {
     docs/CORPUS.md: sources table updated with new wikimedia_commons count (was 22, now >27),

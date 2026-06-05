@@ -84,13 +84,20 @@ python scripts/crawl_corpus.py --target 25
 - All Wikimedia drawings tagged `domain=global` + `source=wikimedia_commons`
 - `License_Discipline` invariant: any candidate whose license cannot be confidently mapped is REFUSED — never optimistically guessed as "public"
 
-**Sources used (v0.1.2):**
+**Sources used (v0.1.3):**
 
 | Source              | Count | License classes               | Domain  |
 |---------------------|-------|-------------------------------|---------|
 | synthetic_self_generated | 12 | public                       | 9 kr + 3 global |
-| wikimedia_commons   | 22    | CC-BY-SA (most) + CC-BY      | global  |
-| **Total**           | **34** |                            |         |
+| wikimedia_commons   | 38    | CC-BY-SA + CC-BY + public    | global  |
+| **Total**           | **50** |                            |         |
+
+The v0.1.2 → v0.1.3 jump (+16 drawings) came from extending the license
+mapping table to handle plain `pd` and `public-domain` raw codes, which
+Wikimedia uses heavily for historical building plans, watercolours, and
+architectural sketches. License discipline preserved: 11 candidates still
+refused in v0.1.3 (down from 27 in v0.1.2) because their raw values remain
+unmappable (GFDL-only, fair-use claims, etc.).
 
 **Refusal log** at `.gem-squared/crawl_summary.json` records:
 - `downloaded` / `refused_by_license` / `refused_by_404` / `refused_by_too_small` counts
