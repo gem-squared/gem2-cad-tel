@@ -1,8 +1,16 @@
 # CAD Trust Engine Lite — production compose
-# Two services: streamlit (the app) and caddy (reverse proxy + auto-TLS).
-# DOMAIN env var (set in /opt/cad-tel/.env on the VPS) controls TLS:
-#   - DOMAIN set       → Caddy auto-issues Let's Encrypt cert on :443
-#   - DOMAIN unset     → Caddy listens on :80 only (IP-only access, no TLS)
+#
+# Single-service mode: integrates with a host-level reverse proxy
+# (Caddy / nginx / Traefik) instead of bundling its own.
+#
+# The host proxy reverse-proxies its public domain to 127.0.0.1:8501.
+# Example /etc/caddy/Caddyfile snippet:
+#
+#     cad-tel.gemsquared.ai {
+#         reverse_proxy localhost:8501
+#     }
+#
+# Audit DB persists in the named volume `audit_data` across compose down/up.
 
 services:
   streamlit:
@@ -12,59 +20,25 @@ services:
     image: cad-trust:latest
     container_name: cad-trust-streamlit
     restart: unless-stopped
-    networks:
-      - app_net
+    # Loopback-only binding — host Caddy is the only public entrypoint.
+    # Prevents accidental direct exposure on the public IP.
+    ports:
+      - "127.0.0.1:8501:8501"
     volumes:
       - audit_data:/data
     environment:
       GEM2_VISION_AUDIT_DB: /data/audit.sqlite
     # Memory cap — paddleocr + opencv inference can spike; OOM-killing this
-    # container keeps caddy + the VPS alive
+    # container keeps the host's other tenants alive
     mem_limit: 2g
     mem_reservation: 1g
-    expose:
-      - "8501"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8501/_stcore/health"]
       interval: 30s
       timeout: 10s
-      start_period: 120s
+      start_period: 180s   # paddleocr first-call model dl can take 1-2 min
       retries: 3
-
-  caddy:
-    image: caddy:2-alpine
-    container_name: cad-trust-caddy
-    restart: unless-stopped
-    networks:
-      - app_net
-    depends_on:
-      - streamlit
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      # If DOMAIN is set in .env, Caddy issues a real cert.
-      # If empty/unset, Caddyfile resolves to :80 (no TLS).
-      DOMAIN: "${DOMAIN:-}"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    mem_limit: 256m
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
-networks:
-  app_net:
-    driver: bridge
 
 volumes:
   # audit_data persists audit.sqlite across compose down/up cycles
   audit_data:
-  # caddy_data holds ACME certs + Caddy state — must persist or
-  # Let's Encrypt re-issues on every restart and hits rate limits
-  caddy_data:
-  caddy_config:
