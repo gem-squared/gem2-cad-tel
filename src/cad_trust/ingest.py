@@ -136,10 +136,18 @@ def ingest(
         suffix = path.suffix.lower()
         if suffix == ".png":
             result = _ingest_png(path)
+        elif suffix in (".jpg", ".jpeg"):
+            # JPG path uses the same PIL load — only the source_format differs.
+            # Added in v0.1.2 (WP-ST-3) to support crawled Wikimedia drawings.
+            result = _ingest_png(path)
+            result.source_format = "jpg"
         elif suffix == ".pdf":
             result = _ingest_pdf(path, dpi_target=dpi_target)
         else:
-            raise IngestError(f"unsupported format {suffix} (v0.1 supports .png + .pdf only)")
+            raise IngestError(
+                f"unsupported format {suffix} "
+                f"(v0.1.2 supports .png, .jpg/.jpeg, .pdf only — .svg / other not yet supported)"
+            )
     except IngestError as exc:
         if audit is not None:
             audit.emit_stage_event("ingest", "ERROR", "ingest failed", {"error": str(exc)})

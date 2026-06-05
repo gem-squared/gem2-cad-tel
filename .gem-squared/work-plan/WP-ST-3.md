@@ -124,7 +124,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 4. Corpus validation tests (extended) + license whitelist enforcement | STATUS: IN_PROGRESS
+### 4. Corpus validation tests (extended) + license whitelist enforcement | STATUS: COMPLETED
 - A: { existing tests/test_corpus.py + new data/samples/ contents (synthetic + real) + crawl_summary.json }
 - B: {
     tests/test_corpus.py acceptance criteria already cover: count in [10, ≤many], provenance per sample, sha256 match, license != None, domain coverage — these MUST continue passing on the expanded corpus,
@@ -142,12 +142,12 @@ WP_Invariants ≜ [
   - existing tests/test_corpus.py: all 7 tests still pass on expanded corpus (after upper-bound relax)
   - tests/test_corpus_crawl.py: NEW tests cover license whitelist + source diversity + crawl_summary schema
   - `pytest tests/test_corpus.py tests/test_corpus_crawl.py` exits 0
-- Tags: [validating-corpus, enforcing-license-whitelist, testing-summary-schema]
-- Result:
-- State:
+- Tags: [validating-corpus, enforcing-license-whitelist, testing-summary-schema, asserting-source-diversity]
+- Result: Existing tests/test_corpus.py 7/7 still pass on expanded 34-drawing corpus (test_count_in_range filters by PNG/PDF subset = 21, within 10-30; other tests iterate all 34 provenance JSONs and remain satisfied). NEW tests/test_corpus_crawl.py 7 tests: every provenance.license ∈ {CC-BY, CC-BY-SA, CC-BY-NC, academic, public, check-required}, both synthetic_self_generated AND ≥1 crawled source present, Wikimedia drawings tagged domain=global, Wikimedia provenance validates as ProvenanceRecord (usage="demo-only"), crawl_summary.json has 9 required keys, every refused_details entry has non-blank reason + stage ∈ {license_check, url_check, download, size_check, dedup}, corpus has ≥13 drawings (12 synthetic + ≥1 crawled). pytest 14/14 PASSED in 0.05s.
+- State: SUCCESS
 - Truth:
 
-### 5. Integration smoke — pipeline.run on every new drawing + audit confirmation | STATUS: PENDING
+### 5. Integration smoke — pipeline.run on every new drawing + audit confirmation | STATUS: IN_PROGRESS
 - A: { audit_db_path: .gem-squared/audit_smoke_v012.sqlite, all drawings in data/samples/ }
 - B: {
     tests/test_corpus_pipeline_smoke.py NEW: iterates every drawing in data/samples/, runs pipeline.run with audit on, asserts:
