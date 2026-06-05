@@ -428,4 +428,4 @@ with tab_past:
             conn.close()
 
 st.divider()
-st.caption("CAD Trust Engine Lite v0.1.1 — gem2-vision — Refusal Over Bluff, **remembered**.")
+st.caption("CAD Trust Engine Lite v0.1.3 — gem2-vision — Refusal Over Bluff, **remembered**.")
