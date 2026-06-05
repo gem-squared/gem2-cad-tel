@@ -1,5 +1,5 @@
 # WP-ST-2: CAD Trust Engine Audit Subsystem v0.1.1 — SQLite-backed audit/logging for all critical pipeline paths
-**STATUS:** IN_PROGRESS | **STATE:** — | **task_id:** 09750a81
+**STATUS:** COMPLETED | **STATE:** SUCCESS | **task_id:** 09750a81
 **created_at:** 2026-06-05T14:22:56Z | **project_slug:** gem2-vision
 **parent_context:** WP-ST-1 v0.1.0 COMPLETED|SUCCESS at HEAD (53 tests passing) — this WP extends the engine WITHOUT modifying its EngineOutput contract
 
@@ -170,7 +170,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 6. Tests + docs + v0.1.1 git tag | STATUS: IN_PROGRESS
+### 6. Tests + docs + v0.1.1 git tag | STATUS: COMPLETED
 - A: { U1-U5 complete; all new code committed; baseline 53 WP-ST-1 tests + new audit tests in tests/ }
 - B: {
     final `pytest` run: ALL tests green (WP-ST-1's 53 + WP-ST-2's new audit tests),
@@ -189,9 +189,9 @@ WP_Invariants ≜ [
   - `.gem-squared/audit.sqlite` matches a `.gitignore` pattern (verify via `git check-ignore`)
   - `git tag v0.1.1` exists on main with completion message naming WP-ST-2 + unit count
   - `git log --oneline -1` shows the WP-finalization commit at HEAD
-- Tags: [verifying-suite, writing-audit-docs, tagging-release]
-- Result:
-- State:
+- Tags: [verifying-suite, writing-audit-docs, tagging-release, finalizing-release]
+- Result: docs/AUDIT.md written — posture (Refusal Over Bluff, remembered), schema reference, Python/env-var/Streamlit/CLI usage, 4 example SQL queries, invariants table (6 invariants: Backward_Compatibility / No_Silent_Audit_Failures / Refusal_Over_Bluff_Across_Time / Schema_Versioned / ISO8601_UTC_Datetimes / Stdlib_Only), v0.2-v0.3 roadmap (streaming dashboard / Prometheus / multi-tenant / retention / replay). root README.md extended with audit row in doc index + new "Audit subsystem (v0.1.1)" section with CLI examples + Status section v0.1.0→v0.1.1. .gitignore extended to exclude .gem-squared/audit.sqlite + journal/wal/shm. `git check-ignore -v .gem-squared/audit.sqlite` confirms ignored. **Final full pytest: 91/91 PASSED in 97.22s** (53 WP-ST-1 backward-compat + 8 schema + 9 context + 9 pipeline_audit + 7 cli + 5 streamlit_queries = 91). git tag v0.1.1 created on main with WP-ST-2 completion message naming all 6 unit-works + 6 invariants. git log shows clean linear history of 16 commits (10 WP-ST-1 + 6 WP-ST-2).
+- State: SUCCESS
 - Truth:
 
 ---

@@ -1,14 +1,15 @@
 # ALARM — gem2-vision
-## Last checked: 2026-06-05T14:18:00Z
+## Last checked: 2026-06-05T14:46:00Z
 
 ## Current Status
-**Branch:** main  |  **Tag:** v0.1.0
+**Branch:** main  |  **Tags:** v0.1.0, v0.1.1
 
-PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 2 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
-> **WP-ST-1 COMPLETED|SUCCESS 2026-06-05** — CAD Trust Engine Lite v0.1.0
-> for 포비콘 application MVP. 9 unit-works delivered autonomously in single
-> session. 53/53 tests pass. v0.1.0 git tag created. Awaiting `/archive-work`.
+> **WP-ST-2 COMPLETED|SUCCESS 2026-06-05** — Audit Subsystem v0.1.1.
+> 6 unit-works delivered autonomously. 91/91 tests pass (53 backward-compat
+> + 38 new audit). v0.1.1 git tag created. Awaiting `/archive-work` for both
+> WP-ST-1 and WP-ST-2.
 
 ### Active (IN_PROGRESS) — units remaining
 (none)
@@ -17,13 +18,11 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Title | task_id | Units | Notes |
 |----|-------|---------|-------|-------|
-| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | All units COMPLETED|SUCCESS, 1 retry (U6 empty-text filter), 9 commits, tagged v0.1.0, 53/53 tests green |
+| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | tag v0.1.0; 53/53 tests; 1 retry (U6 empty-text filter); 9 commits |
+| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | tag v0.1.1; 91/91 tests (53 backward-compat + 38 audit); 0 retries; 6 commits |
 
 ### PENDING (not started)
-
-| WP | Title | task_id | Units | Avg Clarity |
-|----|-------|---------|-------|-------------|
-| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite-backed audit/logging for all critical pipeline paths | 09750a81 | 6 | 87% |
+(none)
 
 ### DEFERRED
 (none)
@@ -40,31 +39,35 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 1 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Date | Summary | STATE |
 |----|------|---------|-------|
-| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1 — 9 units autonomous build: U1 bootstrap (Apple Silicon PaddleOCR install resolved), U2 Output Contract (Pydantic + golden JSON + provenance + license policy), U3 corpus (12 synthetic floor plans + provenance), U4 Ingest_F (PNG/PDF + typed errors), U5 Geometry_F (HoughLinesP + parallel-pair walls), U6 OCR_F (PaddleOCR ko+en, retried 1x), U7 Symbol_F (rule-based + explicit refusal_candidates), U8 Compose+Aggregate (per-field EEF + Measurement_Policy + scale_anchor), U9 Streamlit UI + engineering thesis + 5 demo scenarios + Korean pitch + v0.1.0 tag. 53/53 tests PASSED in 40.05s. | SUCCESS |
+| WP-ST-2 | 2026-06-05 | Audit Subsystem v0.1.1 — 6 units autonomous build: U1 SQLite schema + idempotent migration (PRAGMA user_version=1, 6 tables, 5 indices), U2 AuditContext context manager (failure-soft on sqlite errors, exposes 5 emission methods), U3 pipeline + 5 stages instrumented backward-compat (optional audit param, threaded through all 5 stages, compose records refusals/policy_fires/epistemic_counts), U4 CLI subcommands list-runs/show-run/refusals/stats via argparse + python -m cad_trust.audit entry, U5 Streamlit Past Runs tab + audit-on default in Run Engine tab + aggregate refusal pattern bar chart, U6 docs/AUDIT.md + README update + .gitignore + v0.1.1 tag. 91/91 tests PASSED (53 backward-compat WP-ST-1 + 38 new audit tests). 0 retries. | SUCCESS |
+| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1 — 9 units autonomous build: bootstrap → output contract → corpus → ingest → geometry → ocr → symbols → compose+aggregate → UI+docs+pitch. 53/53 tests PASSED. v0.1.0 tag. | SUCCESS |
 
 ---
 
 ## Archive Summary
 **Archived:** 0
-**Awaiting /archive-work:** 1 (WP-ST-1)
-**Remaining in work-plan/:** 1 file
+**Awaiting /archive-work:** 2 (WP-ST-1 + WP-ST-2)
+**Remaining in work-plan/:** 2 files
 
 ---
 
 ## Pending Decisions
-- v0.2 scope sequencing — David picks priority among: VLM_Verify (Qwen-VL) / Synthetic KR generator / Automated crawler + license ledger / DWG ingest
-- Whether to `/archive-work` WP-ST-1 now, or to first run the Streamlit demo in browser for visual verification (visual UI smoke deferred to David per environmental limit)
+- v0.2 scope sequencing — David picks priority among: VLM_Verify (Qwen-VL re-checker) / Synthetic KR generator / Automated crawler + license ledger / DWG ingest / Real-time audit streaming / Multi-tenant DB
+- Whether to `/archive-work` both WPs now, or first run Streamlit demo (with Past Runs tab) in browser for visual verification
 
 ---
 
 ## Known Issues
-- ⊥ v0.1 corpus is 100% synthetic — documented honestly in CORPUS.md + docs/README.md Limitations section
-- ⊥ Visual Streamlit UI verification deferred — process launches + serves HTTP 200, but interactive UI flow not browser-tested in autonomous session
-- ⊬ Rule-based door/window detection coverage on real production drawings unknown — v0.1 acceptable per Refusal_Over_Bluff invariant, but coverage will need real-corpus tuning in v0.2
+- ⊥ v0.1 corpus is 100% synthetic — documented honestly in docs/README.md Limitations + docs/CORPUS.md
+- ⊥ Visual Streamlit UI verification deferred — process launches + serves HTTP 200, but interactive flow (especially Past Runs tab drill-into) not browser-tested in autonomous session
+- ⊬ Rule-based door/window coverage on real production drawings unknown — v0.1 acceptable per Refusal_Over_Bluff invariant
+- ⊬ Audit DB grows unbounded — no retention/rotation policy in v0.1.1; deferred to v0.3
 
 ---
 
 *Initialized: 2026-06-05T13:01:56Z via /init-session*
-*Updated: 2026-06-05T13:36:40Z — WP-ST-1 PENDING (9 units, avg_clarity 81%) via /plan-work*
-*Updated: 2026-06-05T13:36:40Z — /update-work-plan applied 6 GPT-reviewed changes; avg_clarity 81→80%*
-*Updated: 2026-06-05T14:18:00Z — WP-ST-1 COMPLETED|SUCCESS via autonomous /proceed-work + inline /verify-work on all 9 units. 1 retry (U6 empty-text filter). 9 commits + v0.1.0 git tag. 53/53 pytest green. Counters: PENDING 1→0, COMPLETED 0→1.*
+*Updated: 2026-06-05T13:36:40Z — WP-ST-1 PENDING via /plan-work*
+*Updated: 2026-06-05T13:36:40Z — /update-work-plan applied 6 GPT-reviewed changes*
+*Updated: 2026-06-05T14:18:00Z — WP-ST-1 COMPLETED|SUCCESS via autonomous /proceed-work + inline /verify-work on all 9 units. v0.1.0 tag. 53/53 tests.*
+*Updated: 2026-06-05T14:22:56Z — WP-ST-2 PENDING via /plan-work (audit subsystem, 6 units, avg_clarity 87%)*
+*Updated: 2026-06-05T14:46:00Z — WP-ST-2 COMPLETED|SUCCESS via autonomous /proceed-work + inline /verify-work on all 6 units. v0.1.1 tag. 91/91 tests (53 backward-compat + 38 audit). Counters: PENDING 1→0, COMPLETED 1→2.*
