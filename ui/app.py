@@ -52,6 +52,79 @@ def _resolve_audit_db() -> Path:
     return Path(env) if env else DEFAULT_AUDIT_DB
 
 
+# ── Preview helpers (WP-ST-4 U3) ────────────────────────────────────────────
+
+
+PREVIEW_MAX_WIDTH = 400
+PREVIEW_SUPPORTED = (".png", ".jpg", ".jpeg", ".pdf")
+PREVIEW_KNOWN_UNSUPPORTED = (".svg",)
+
+
+def _load_preview_image_impl(path_str: str, mtime: float, max_width: int) -> Image.Image | None:
+    """Pure-function preview loader.
+
+    Returns a PIL.Image (RGB, thumbnail-sized) or None when the format is
+    unsupported / file unreadable. NEVER raises on bad input — None signals
+    "preview unavailable", which the UI surfaces as a caption.
+
+    `mtime` is here purely as a cache-key contributor (st.cache_data hashes args).
+    """
+    path = Path(path_str)
+    if not path.exists():
+        return None
+    suffix = path.suffix.lower()
+    try:
+        if suffix in (".png", ".jpg", ".jpeg"):
+            with Image.open(path) as img:
+                rgb = img.convert("RGB")
+                rgb.thumbnail((max_width, max_width * 2), Image.LANCZOS)
+                # Force eager decode so the with-block can close
+                rgb.load()
+                return rgb
+        if suffix == ".pdf":
+            from pdf2image import convert_from_path
+            pages = convert_from_path(str(path), dpi=72, first_page=1, last_page=1)
+            if not pages:
+                return None
+            rgb = pages[0].convert("RGB")
+            rgb.thumbnail((max_width, max_width * 2), Image.LANCZOS)
+            return rgb
+    except Exception:
+        return None
+    return None
+
+
+def load_preview_image(path: Path, max_width: int = PREVIEW_MAX_WIDTH) -> Image.Image | None:
+    """Streamlit-wrapped preview loader. Caches per (path, mtime) so reselects are instant.
+
+    Per `Preview_Is_Read_Only` invariant: this function MUST NOT call run_pipeline,
+    open the audit DB, or write provenance. It is a pure visual surface.
+    """
+    if not path.exists():
+        return None
+    return _load_preview_image_cached(str(path), path.stat().st_mtime, max_width)
+
+
+@st.cache_data(show_spinner=False)
+def _load_preview_image_cached(path_str: str, mtime: float, max_width: int) -> Image.Image | None:
+    return _load_preview_image_impl(path_str, mtime, max_width)
+
+
+def preview_status_message(path: Path) -> str | None:
+    """Returns a status string when the file format is known-unsupported, else None."""
+    if not path.exists():
+        return "(file not found)"
+    suffix = path.suffix.lower()
+    if suffix in PREVIEW_KNOWN_UNSUPPORTED:
+        return (
+            f"Preview unavailable for {suffix.upper()} — pipeline will refuse "
+            f"this format at ingest ({suffix} not in supported {PREVIEW_SUPPORTED})."
+        )
+    if suffix not in PREVIEW_SUPPORTED:
+        return f"Preview unavailable for {suffix or '(no extension)'}."
+    return None
+
+
 def _overlay(canonical: np.ndarray, output: EngineOutput) -> Image.Image:
     img = Image.fromarray(canonical).convert("RGBA")
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -112,14 +185,20 @@ tab_run, tab_past = st.tabs(["Run Engine", "Past Runs (Audit)"])
 # ── Tab 1: Run Engine ───────────────────────────────────────────────────────
 
 with tab_run:
-    col_pick, _ = st.columns([1, 3])
+    col_pick, col_preview = st.columns([2, 3])
     with col_pick:
-        samples = sorted(SAMPLES_DIR.glob("*.png")) + sorted(SAMPLES_DIR.glob("*.pdf"))
+        samples = (
+            sorted(SAMPLES_DIR.glob("*.png"))
+            + sorted(SAMPLES_DIR.glob("*.pdf"))
+            + sorted(SAMPLES_DIR.glob("*.jpg"))
+            + sorted(SAMPLES_DIR.glob("*.jpeg"))
+            + sorted(SAMPLES_DIR.glob("*.svg"))
+        )
         sample_options = ["(upload your own)"] + [s.name for s in samples]
         choice = st.selectbox("Drawing", sample_options, index=1 if samples else 0)
         uploaded = None
         if choice == "(upload your own)":
-            uploaded = st.file_uploader("Upload PNG or PDF", type=["png", "pdf"])
+            uploaded = st.file_uploader("Upload PNG / JPG / PDF", type=["png", "jpg", "jpeg", "pdf"])
 
     if choice != "(upload your own)":
         chosen_path = SAMPLES_DIR / choice
@@ -128,6 +207,22 @@ with tab_run:
         chosen_path.write_bytes(uploaded.getvalue())
     else:
         chosen_path = None
+
+    # Preview pane (WP-ST-4 U3) — right of dropdown, BEFORE pipeline runs
+    with col_preview:
+        st.markdown("**Preview**")
+        if chosen_path is None:
+            st.caption("(select a drawing to preview)")
+        else:
+            status = preview_status_message(chosen_path)
+            if status:
+                st.info(status)
+            else:
+                preview_img = load_preview_image(chosen_path)
+                if preview_img is None:
+                    st.warning(f"Could not load preview for {chosen_path.name}")
+                else:
+                    st.image(preview_img, caption=chosen_path.name, width=PREVIEW_MAX_WIDTH)
 
     if chosen_path and st.button("Run Engine", type="primary"):
         try:

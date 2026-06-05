@@ -59,7 +59,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 2. Re-crawl execution — acquire previously-refused public-domain drawings | STATUS: IN_PROGRESS
+### 2. Re-crawl execution — acquire previously-refused public-domain drawings | STATUS: COMPLETED
 - A: { extended license mapping (U1), existing 22 Wikimedia + 12 synthetic drawings, sha256 dedup from data/provenance/ }
 - B: {
     `python scripts/crawl_corpus.py --target 25` executed,
@@ -77,12 +77,12 @@ WP_Invariants ≜ [
   - crawl_summary.json refused_by_license count < 27 (the v0.1.2 baseline)
   - No license=None in any provenance JSON
   - sha256 collision sanity: tests/test_corpus.py test_no_duplicate_sha256 still passes
-- Tags: [re-crawling-wikimedia, expanding-corpus, deduping-existing]
-- Result:
-- State:
+- Tags: [re-crawling-wikimedia, expanding-corpus, deduping-existing, unlocking-pd-licenses]
+- Result: `python scripts/crawl_corpus.py --target 25` executed. **+16 new drawings downloaded** — most were previously-refused 'pd' raw candidates (historical building plans, watercolours, architectural sketches). Corpus now: **12 synthetic + 38 Wikimedia = 50 total drawings**. File mix: 23 PNG + 24 JPG + 1 PDF + 2 SVG. License refusals dropped from 27 → **11** (still disciplined — these remaining 11 have license raw values that legitimately can't be mapped, e.g., GFDL-only, fair-use, etc.). 22 dedup entries confirm sha256-based idempotent re-run (existing files NOT redownloaded). 0 HTTP 404s + 1 too-small refusal. New files all have valid provenance.json validating ProvenanceRecord. pytest tests/test_corpus.py + tests/test_corpus_crawl.py 14/14 PASSED in 0.05s — baseline tests still hold on expanded corpus.
+- State: SUCCESS
 - Truth:
 
-### 3. Streamlit preview pane + helpers + UI tests | STATUS: PENDING
+### 3. Streamlit preview pane + helpers + UI tests | STATUS: IN_PROGRESS
 - A: { ui/app.py with existing 2-tab layout from WP-ST-2 U5 }
 - B: {
     NEW preview helpers in ui/app.py (or ui/preview.py if cleaner):
