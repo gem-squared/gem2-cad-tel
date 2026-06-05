@@ -118,7 +118,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 4. Ingest_F — PNG/PDF → normalized raster | STATUS: IN_PROGRESS
+### 4. Ingest_F — PNG/PDF → normalized raster | STATUS: COMPLETED
 - A: { drawing_path: Path, dpi_target: 200 }
 - B: { canonical_image: numpy_ndarray (H×W×3 uint8), source_format: {png, pdf}, page_index: ℕ?, original_dims: (W, H), normalized_dims: (W', H'), ingest_metadata: {filename, page_count, ingest_timestamp_iso8601} }
 - P: drawing_path readable; if PDF → pdf2image + poppler available
@@ -130,12 +130,12 @@ WP_Invariants ≜ [
   - Unreadable file raises typed `IngestError`, NEVER returns silent None
   - Aspect ratio of normalized_dims matches original_dims within ±1 px
   - `pytest tests/test_ingest.py` covers ≥1 PNG fixture and ≥1 PDF fixture
-- Tags: [ingesting-drawings, rasterizing-pdf, normalizing-input]
-- Result:
-- State:
+- Tags: [ingesting-drawings, rasterizing-pdf, normalizing-input, raising-typed-errors]
+- Result: src/cad_trust/ingest.py implements ingest(path, dpi_target=200) → IngestResult. PNG: PIL.Image.open + convert("RGB") + np.asarray → (H,W,3) uint8. PDF: pdf2image.convert_from_path (poppler backend, verified present at /opt/homebrew/bin/pdftoppm) → page 0 only with metadata.page_count + warning when >1 page (multi-page deferred to v0.2). Unreadable / missing / unsupported all raise typed IngestError (no silent None). IngestResult is a dataclass with canonical_image, source_format ∈ {png,pdf}, page_index, original_dims, normalized_dims, ingest_metadata (filename, page_count, ingest_timestamp_iso8601), warnings list. tests/fixtures/ingest_test.pdf created by PIL PDF-save of corpus sample. pytest tests/test_ingest.py 7/7 PASSED in 2.58s: PNG canonical, PDF page 0, all-12-corpus-PNGs smoke, IngestError on corrupted/missing/unsupported, aspect ratio preserved.
+- State: SUCCESS
 - Truth:
 
-### 5. Geometry_F — OpenCV line/contour extraction + wall candidates | STATUS: PENDING
+### 5. Geometry_F — OpenCV line/contour extraction + wall candidates | STATUS: IN_PROGRESS
 - A: canonical_image (from U4)
 - B: { lines: Seq[{p1, p2, length_px, thickness_px, evidence}], contours: Seq[{points, area_px, closed: 𝔹}], wall_candidates: Seq[{polyline, thickness_px, evidence: {source: "opencv_line", signal: "parallel thick line pair, gap=N px"}}] }
 - P: canonical_image is grayscale-convertible
