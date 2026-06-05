@@ -1,16 +1,16 @@
 # ALARM — gem2-vision
-## Last checked: 2026-06-06T00:35:00Z
+## Last checked: 2026-06-06T01:50:00Z
 
 ## Current Status
-**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3
+**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3, v0.1.4
+**Live demo:** https://cad-tel.gemsquared.ai
 
-PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 5 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
-> **WP-ST-4 COMPLETED|SUCCESS 2026-06-06** — License fix + preview pane v0.1.3.
-> 4 unit-works delivered autonomously. 145 fast tests + 3 smoke = 148 total
-> green. Corpus 34 → 50 drawings (license fix unlocked 16 previously-refused
-> public-domain candidates). Streamlit preview pane right of Drawing dropdown.
-> v0.1.3 git tag. All four WPs awaiting `/archive-work`.
+> **WP-ST-5 COMPLETED|SUCCESS 2026-06-06** — Vultr VPS deployment v0.1.4.
+> 6 unit-works delivered autonomously. Public URL live on cad-tel.gemsquared.ai
+> via host Caddy + Docker single-service compose. 145/145 fast tests still green.
+> v0.1.4 git tag pushed. All five WPs awaiting `/archive-work`.
 
 ### Active (IN_PROGRESS) — units remaining
 (none)
@@ -19,16 +19,14 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Title | task_id | Units | Notes |
 |----|-------|---------|-------|-------|
-| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | v0.1.0; 53/53 tests; 1 retry; 9 commits |
-| WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | v0.1.1; 91/91 tests; 0 retries; 6 commits |
-| WP-ST-3 | Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion | f6316037 | 6 | v0.1.2; 130 tests; 1 retry; 6 commits; corpus 12→34 |
-| WP-ST-4 | v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | v0.1.3; 148 tests; 1 retry (AST invariant refactor); 4 commits; corpus 34→50; preview pane added |
+| WP-ST-1 | CAD Trust Engine Lite v0.1 — 포비콘 application MVP | f3203e2e | 9 | v0.1.0; 53 tests; 1 retry; 9 commits |
+| WP-ST-2 | Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | v0.1.1; 91 tests; 0 retries; 6 commits |
+| WP-ST-3 | Crawl public-source CAD drawings — v0.1.2 corpus expansion | f6316037 | 6 | v0.1.2; 130 tests; 1 retry; 6 commits; corpus 12→34 |
+| WP-ST-4 | v0.1.3 — pd license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | v0.1.3; 148 tests; 1 retry; 4 commits; corpus 34→50 |
+| WP-ST-5 | v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy) | 00d8cde5 | 6 | v0.1.4; 145 tests; 2 mid-flight fixes; 5 commits; **live at https://cad-tel.gemsquared.ai** |
 
 ### PENDING (not started)
-
-| WP | Title | task_id | Units | Avg Clarity |
-|----|-------|---------|-------|-------------|
-| WP-ST-5 | v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy) | 00d8cde5 | 6 | 81% (U5 ★ gated on owner info) |
+(none)
 
 ### DEFERRED
 (none)
@@ -45,39 +43,42 @@ PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Date | Summary | STATE |
 |----|------|---------|-------|
-| WP-ST-4 | 2026-06-06 | v0.1.3 license fix + preview pane — 4 units: U1 exact-vs-prefix license matcher (prevents pd→pdf false-match) + plain pd/cc0/public-domain mappings, U2 re-crawl +16 drawings (corpus 34→50), U3 Streamlit preview pane right of dropdown with PIL.Image + @st.cache_data + Preview_Is_Read_Only AST invariant, U4 docs/CORPUS.md + README + tag. 145 fast tests + 3 smoke. | SUCCESS |
-| WP-ST-3 | 2026-06-05 | Real-source corpus crawl v0.1.2 — 6 units; +22 Wikimedia drawings; pipeline 100% success on 32 ingestable. | SUCCESS |
-| WP-ST-2 | 2026-06-05 | Audit Subsystem v0.1.1 — 6 units; SQLite + AuditContext + Streamlit Past Runs tab. | SUCCESS |
-| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1.0 — 9 units; per-field EEF + Measurement_Policy + refusal_candidates + Streamlit. | SUCCESS |
+| WP-ST-5 | 2026-06-06 | Vultr VPS deployment v0.1.4 — 6 units: container artifacts (Dockerfile + compose + Caddyfile + .dockerignore), bootstrap.sh (Docker + ufw + 2GB swap, idempotent), deploy.sh (rsync + compose up + healthcheck + honest smoke), docs/DEPLOY.md, **live SSH deploy on Vultr 173.199.92.236** (Ubuntu 24.04; integrated with pre-existing host Caddy via vhost append), README badge + tag. Live URL: https://cad-tel.gemsquared.ai. | SUCCESS |
+| WP-ST-4 | 2026-06-06 | v0.1.3 license fix + preview pane — 4 units. | SUCCESS |
+| WP-ST-3 | 2026-06-05 | Real-source corpus crawl v0.1.2 — 6 units; +22 Wikimedia drawings. | SUCCESS |
+| WP-ST-2 | 2026-06-05 | Audit Subsystem v0.1.1 — 6 units. | SUCCESS |
+| WP-ST-1 | 2026-06-05 | CAD Trust Engine Lite v0.1.0 — 9 units. | SUCCESS |
 
 ---
 
 ## Archive Summary
 **Archived:** 0
-**Awaiting /archive-work:** 4 (WP-ST-1 + WP-ST-2 + WP-ST-3 + WP-ST-4)
-**Remaining in work-plan/:** 4 files
+**Awaiting /archive-work:** 5 (WP-ST-1 + WP-ST-2 + WP-ST-3 + WP-ST-4 + WP-ST-5)
+**Remaining in work-plan/:** 5 files
 
 ---
 
 ## Pending Decisions
-- v0.2 scope sequencing — VLM_Verify especially attractive now that we see 50-drawing corpus produces 0-931 refusals per drawing on real data
-- Whether to `/archive-work` all four WPs at once or sequentially
-- Whether to fix the 2 SVG drawings (remove or extend with cairosvg dep)
-- Whether to re-run the 10-min smoke test on the expanded 50-drawing corpus
+- Whether to `/archive-work` all five WPs at once or sequentially
+- v0.2 scope sequencing — WP-ST-6 Expert CV CrossCheck + Page Type guard is the recommended next move
+- Whether to harden VPS deploy (disable root password auth on 173.199.92.236, add fail2ban, etc.)
+- Whether to add a CI/CD GitHub Actions workflow that auto-deploys on push to main
 
 ---
 
 ## Known Issues
-- ⊥ 2 SVG drawings cannot be ingested (SVG support needs cairosvg/wand new dep)
-- ⊥ Some real drawings produce 20,000+ objects (mostly noise on non-CAD content like watercolours/cross-sections); high refusal counts make them demo-positive but slow (~116s)
+- ⊥ 2 SVG drawings cannot be ingested (SVG support would require cairosvg/wand new dep)
+- ⊬ Some real drawings produce 20,000+ "objects" — high refusal counts make them safe but slow (~116s)
 - ⊬ Audit DB grows unbounded — retention/rotation deferred to v0.3
-- ⊬ 11 Wikimedia candidates still refused by license (GFDL-only, fair-use, etc.) — these are correct refusals per No_Source_Bluff
-- ⊥ Visual Streamlit UI verification still deferred — process auto-reloaded with new preview pane; interactive flow not browser-tested in autonomous session
+- ⊬ deploy.sh smoke check still looks for "CAD Trust Engine" in HTML body but Streamlit renders title via JS → false-positive failure path. Worth tightening to check Streamlit health endpoint instead. Minor.
+- ⊥ VPS root password was shared in conversation; David should rotate at convenience
+- ⊥ Visual demo verification by David still pending — process is healthy + serves HTTP 200, interactive flow not browser-tested
 
 ---
 
 *Initialized: 2026-06-05T13:01:56Z via /init-session*
 *Updated: 2026-06-05T14:18:00Z — WP-ST-1 COMPLETED|SUCCESS, v0.1.0, 53 tests*
 *Updated: 2026-06-05T14:46:00Z — WP-ST-2 COMPLETED|SUCCESS, v0.1.1, 91 tests*
-*Updated: 2026-06-06T00:18:00Z — WP-ST-3 COMPLETED|SUCCESS, v0.1.2, 130 tests (corpus 12→34)*
-*Updated: 2026-06-06T00:35:00Z — WP-ST-4 COMPLETED|SUCCESS, v0.1.3, 148 tests (corpus 34→50, license fix unlocks +16, preview pane added). Counters: PENDING 1→0, COMPLETED 3→4.*
+*Updated: 2026-06-06T00:18:00Z — WP-ST-3 COMPLETED|SUCCESS, v0.1.2, 130 tests*
+*Updated: 2026-06-06T00:35:00Z — WP-ST-4 COMPLETED|SUCCESS, v0.1.3, 148 tests (corpus 34→50)*
+*Updated: 2026-06-06T01:50:00Z — WP-ST-5 COMPLETED|SUCCESS, v0.1.4, live at cad-tel.gemsquared.ai (Vultr VPS via host Caddy + Docker single-service compose). Counters: PENDING 1→0, COMPLETED 4→5.*

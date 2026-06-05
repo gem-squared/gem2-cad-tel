@@ -1,5 +1,5 @@
 # WP-ST-5: v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy)
-**STATUS:** IN_PROGRESS | **STATE:** — | **task_id:** 00d8cde5
+**STATUS:** COMPLETED | **STATE:** SUCCESS | **task_id:** 00d8cde5
 **created_at:** 2026-06-05T16:24:13Z | **project_slug:** gem2-vision
 **parent_context:** WP-ST-1..4 all COMPLETED|SUCCESS; v0.1.3 at HEAD; Streamlit Cloud build iterating but heavy paddleocr install on free tier is the load-bearing risk; Vultr VPS gives full control + larger RAM
 
@@ -170,7 +170,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 6. README badge + git tag v0.1.4 + commit deploy artifacts | STATUS: IN_PROGRESS
+### 6. README badge + git tag v0.1.4 + commit deploy artifacts | STATUS: COMPLETED
 - A: { live URL from U5, all deploy/ artifacts + docs/DEPLOY.md from U1-U4 }
 - B: {
     README.md (Korean) + README.en.md (English): add "🟢 Live demo: <URL>" badge near the top,
@@ -189,9 +189,9 @@ WP_Invariants ≜ [
   - `git tag v0.1.4 --list` shows the tag with completion message
   - `git push --tags` succeeds
   - public URL still responds HTTP 200 after the tag is pushed (sanity)
-- Tags: [tagging-release, badging-readme, finalizing-deploy]
-- Result:
-- State:
+- Tags: [tagging-release, badging-readme, finalizing-deploy, integrating-host-caddy]
+- Result: README.md (한국어) + README.en.md updated with 🟢 라이브 데모/Live demo badges linking to https://cad-tel.gemsquared.ai + cold-start note (paddleocr first-call ~1-2min). Both READMEs' Status sections extended with v0.1.4 line. WP-ST-5.md fully marked COMPLETED|SUCCESS across all 6 units. alarm.md counters updated. Full fast pytest 145/145 PASSED in 97s — no regression from deploy artifacts addition. git commit + tag v0.1.4 + push (main + tag) to github.com/gem-squared/gem2-cad-tel.
+- State: SUCCESS
 - Truth:
 
 ---
