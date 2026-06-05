@@ -4,7 +4,7 @@
 ## Current Status
 **Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
 > **WP-ST-3 COMPLETED|SUCCESS 2026-06-05** — Real-source corpus crawl v0.1.2.
 > 6 unit-works delivered autonomously. 127 fast tests + 3 smoke tests
@@ -24,7 +24,10 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 3 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-3 | Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion | f6316037 | 6 | tag v0.1.2; 130 tests (127 fast + 3 smoke); 1 retry (U2 relative_to fallback); 6 commits; corpus 12→34 drawings; 100% pipeline success on 32 real+synthetic |
 
 ### PENDING (not started)
-(none)
+
+| WP | Title | task_id | Units | Avg Clarity |
+|----|-------|---------|-------|-------------|
+| WP-ST-4 | v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | 84% |
 
 ### DEFERRED
 (none)

@@ -70,20 +70,26 @@ class CrawlSummary:
 # ── license mapping ─────────────────────────────────────────────────────────
 
 
-def _license_mapping_table() -> tuple[tuple[str, str], ...]:
-    """Order matters — first match wins; longer prefixes first to avoid
-    'cc-by-nc' getting matched by 'cc-by-'."""
+def _license_mapping_table() -> tuple[tuple[str, str, str], ...]:
+    """Order matters — first match wins. Entries are (pattern, match_kind, mapped):
+        match_kind='exact'  → key must equal pattern
+        match_kind='prefix' → key starts with pattern (typically pattern ends in '-')
+    Plain short codes like 'pd' use exact match so 'pdf' doesn't false-match."""
     return (
-        ("cc-zero", "public"),
-        ("publicdomain", "public"),
-        ("pd-", "public"),
-        ("cc-by-nc-sa", "CC-BY-NC"),
-        ("cc-by-nc-", "CC-BY-NC"),
-        ("cc-by-nc", "CC-BY-NC"),
-        ("cc-by-sa-", "CC-BY-SA"),
-        ("cc-by-sa", "CC-BY-SA"),
-        ("cc-by-", "CC-BY"),
-        ("cc-by", "CC-BY"),
+        ("cc-zero", "exact", "public"),
+        ("cc0", "exact", "public"),                # v0.1.3: plain cc0 = cc-zero
+        ("public-domain", "exact", "public"),      # v0.1.3
+        ("publicdomain", "exact", "public"),
+        ("pd-", "prefix", "public"),               # 'pd-old', 'pd-self', etc.
+        ("pd", "exact", "public"),                 # v0.1.3: plain 'pd' (Wikimedia uses this) — exact to avoid matching 'pdf'
+        ("cc-by-nc-sa-", "prefix", "CC-BY-NC"),
+        ("cc-by-nc-sa", "exact", "CC-BY-NC"),
+        ("cc-by-nc-", "prefix", "CC-BY-NC"),
+        ("cc-by-nc", "exact", "CC-BY-NC"),
+        ("cc-by-sa-", "prefix", "CC-BY-SA"),
+        ("cc-by-sa", "exact", "CC-BY-SA"),
+        ("cc-by-", "prefix", "CC-BY"),
+        ("cc-by", "exact", "CC-BY"),
     )
 
 
@@ -96,8 +102,10 @@ def map_license(license_raw: str | None) -> str | None:
     if not license_raw:
         return None
     key = str(license_raw).strip().lower()
-    for prefix, mapped in _license_mapping_table():
-        if key.startswith(prefix):
+    for pattern, kind, mapped in _license_mapping_table():
+        if kind == "exact" and key == pattern:
+            return mapped
+        if kind == "prefix" and key.startswith(pattern):
             return mapped
     return None
 

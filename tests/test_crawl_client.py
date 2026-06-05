@@ -40,7 +40,13 @@ _spec.loader.exec_module(crawl)  # type: ignore[union-attr]
         ("PD-self", "public"),
         ("publicdomain", "public"),
         ("cc-zero", "public"),
-        ("CC0", None),  # we don't map plain "CC0" — would need explicit entry
+        # v0.1.3 additions: plain 'pd' and 'public-domain'
+        ("pd", "public"),
+        ("PD", "public"),  # case-insensitive
+        ("public-domain", "public"),
+        ("Public-Domain", "public"),
+        ("cc0", "public"),  # v0.1.3: plain cc0 now maps
+        ("CC0", "public"),  # case-insensitive
         ("GFDL", None),
         ("", None),
         (None, None),
@@ -48,6 +54,27 @@ _spec.loader.exec_module(crawl)  # type: ignore[union-attr]
 )
 def test_license_mapping(raw, expected) -> None:
     assert crawl.map_license(raw) == expected
+
+
+def test_pd_dash_regression_still_works() -> None:
+    """v0.1.3 added plain 'pd' but longer 'pd-' prefix MUST still win for things like 'pd-old'."""
+    # PD-old should match 'pd-' (the explicit -old suffix is preserved as 'public')
+    assert crawl.map_license("PD-old") == "public"
+    assert crawl.map_license("pd-self") == "public"
+    assert crawl.map_license("pd-something-new") == "public"
+
+
+def test_no_source_bluff_still_holds_after_pd_addition() -> None:
+    """Adding plain 'pd' must NOT cause spurious matches on unknown codes.
+
+    v0.1.3 uses exact-match for short tokens like 'pd' so 'pdf' / 'pdq' / etc.
+    don't false-match into 'public'.
+    """
+    assert crawl.map_license("custom-corporate-eula") is None
+    assert crawl.map_license("pdf") is None        # exact match — 'pdf' != 'pd'
+    assert crawl.map_license("pdf-license") is None  # not 'pd-*' either
+    assert crawl.map_license("pdq") is None
+    assert crawl.map_license("private") is None    # not in table
 
 
 def test_license_mapping_never_optimistic_on_unknown() -> None:
