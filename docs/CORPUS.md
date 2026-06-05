@@ -63,4 +63,54 @@ The corpus builder's refusal posture mirrors the engine's. Categories the builde
 
 ---
 
-*v0.2 lifts this from a hand-curated convention to an automated `Drawing_Corpus_Builder` F — see WP-ST-1 References.*
+## Crawl strategy (v0.1.2)
+
+WP-ST-3 (v0.1.2) added a real-source crawler that supplements the synthetic baseline:
+
+```bash
+python scripts/crawl_corpus.py --target 25
+# Output: 22 real architectural drawings from Wikimedia Commons,
+# 27 refused by No_Source_Bluff (no mappable license),
+# 1 refused by too-small.
+```
+
+**Primary source: Wikimedia Commons** (`https://commons.wikimedia.org/w/api.php`)
+
+- Categories queried: `Floor plans`, `Architectural drawings`, `House plans`
+- License metadata via `prop=imageinfo&iiprop=url|extmetadata`
+- License mapping: `cc-by-sa-*` → `CC-BY-SA`, `cc-by-*` → `CC-BY`, `pd-*` → `public`, `cc-zero` → `public`; unknown → REFUSED
+- Polite crawler: identifying `User-Agent`, 0.5s sleep between requests
+- Per-file: `sha256` + `provenance.json` validating against `ProvenanceRecord`
+- All Wikimedia drawings tagged `domain=global` + `source=wikimedia_commons`
+- `License_Discipline` invariant: any candidate whose license cannot be confidently mapped is REFUSED — never optimistically guessed as "public"
+
+**Sources used (v0.1.2):**
+
+| Source              | Count | License classes               | Domain  |
+|---------------------|-------|-------------------------------|---------|
+| synthetic_self_generated | 12 | public                       | 9 kr + 3 global |
+| wikimedia_commons   | 22    | CC-BY-SA (most) + CC-BY      | global  |
+| **Total**           | **34** |                            |         |
+
+**Refusal log** at `.gem-squared/crawl_summary.json` records:
+- `downloaded` / `refused_by_license` / `refused_by_404` / `refused_by_too_small` counts
+- Per-source breakdown
+- Every refusal carries a specific `reason` + `stage` field (never `"unknown"`)
+
+**Format support after v0.1.2:** Ingest_F accepts `.png`, `.jpg`/`.jpeg`, and `.pdf`. SVG and other formats raise typed `IngestError` (not silently skipped).
+
+---
+
+## Empirical coverage on real drawings (WP-ST-3 U5)
+
+The pipeline ran end-to-end on every ingestable drawing (32 = 12 synthetic + 20 real PNG/JPG/PDF):
+
+- **100% success** (no crashes, all produce valid `EngineOutput`)
+- Synthetic baseline: 15-24 objects, **0 refusals**, scale anchor detected, ~3s each
+- Real Wikimedia: 11-20,267 objects, **2-931 refusals each**, mixed scale anchor, 1-116s
+
+The huge variance in refusal counts on real data is the point: `Refusal_Over_Bluff` produces vastly more refusals on complex drawings, all auditably queryable via the v0.1.1 audit subsystem.
+
+---
+
+*v0.2 lifts the crawler into a full `Drawing_Corpus_Builder` F — see WP-ST-1 References. v0.2 will also support FloorPlanCAD / ArchCAD-400K (registration-gated) and DWG native ingest.*

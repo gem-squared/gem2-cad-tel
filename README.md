@@ -58,5 +58,6 @@ See `docs/AUDIT.md` for schema, invariants, and example queries.
 
 - **v0.1.0** — 2026-06-05: CAD Trust Engine Lite, 9 units, 53 tests
 - **v0.1.1** — 2026-06-05: Audit subsystem, +6 units, +38 tests (91 total)
+- **v0.1.2** — 2026-06-05: Real-source corpus crawl (Wikimedia Commons), +6 units, +39 tests (130 total: 127 fast + 3 smoke). Corpus grew 12 → 34 drawings. Ingest now supports JPG. Pipeline smoke on all 32 ingestable drawings: 100% success, refusal counts 0-931 per drawing (Refusal Over Bluff scales to real complexity).
 
-See `docs/README.md` for the engineering thesis and v0.2 / v0.3 roadmap.
+See `docs/README.md` for the engineering thesis and `docs/CORPUS.md` for the crawl strategy + sources.

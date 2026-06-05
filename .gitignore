@@ -44,6 +44,9 @@ Thumbs.db
 .gem-squared/audit.sqlite-wal
 .gem-squared/audit.sqlite-shm
 
+# WP-ST-3 crawl summary (runtime state; regeneratable via scripts/crawl_corpus.py)
+.gem-squared/crawl_summary.json
+
 # Python
 __pycache__/
 *.py[cod]

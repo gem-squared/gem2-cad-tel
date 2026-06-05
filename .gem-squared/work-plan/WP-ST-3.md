@@ -147,7 +147,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 5. Integration smoke — pipeline.run on every new drawing + audit confirmation | STATUS: IN_PROGRESS
+### 5. Integration smoke — pipeline.run on every new drawing + audit confirmation | STATUS: COMPLETED
 - A: { audit_db_path: .gem-squared/audit_smoke_v012.sqlite, all drawings in data/samples/ }
 - B: {
     tests/test_corpus_pipeline_smoke.py NEW: iterates every drawing in data/samples/, runs pipeline.run with audit on, asserts:
@@ -165,12 +165,12 @@ WP_Invariants ≜ [
   - pipeline.run succeeds on ≥ 80% of new crawled drawings (lower bound — TPMN refusal is acceptable but engine MUST not crash on real inputs)
   - audit DB confirms: runs rows for each successful pipeline.run; refusals_log + epistemic_counts populated
   - Test prints a diagnostic table: |drawing | objects | refusals | scale_anchor | runtime_ms| to validate real-data behavior is non-trivial
-- Tags: [smoking-pipeline, validating-real-data, diagnosing-coverage]
-- Result:
-- State:
+- Tags: [smoking-pipeline, validating-real-data, diagnosing-coverage, extending-jpg-ingest]
+- Result: src/cad_trust/ingest.py extended to handle .jpg/.jpeg via PIL (same _ingest_png path; sets result.source_format='jpg'). Backward compat preserved: PNG/PDF unchanged. SVG and other formats raise typed IngestError with v0.1.2 message naming supported formats. tests/test_corpus_pipeline_smoke.py 3 tests: ingestable count ≥13, SVG raises IngestError, aggregate 80% smoke. **EMPIRICAL RESULTS: 100% success rate (32/32 ingestable drawings)** — engine does NOT crash on diverse real Wikimedia data. Synthetic baseline (12): 15-24 objects, 0 refusals, anchor=Y, ~3s each. Real Wikimedia (20): object counts 11-20,267 (the anatomy theatre cross-section at the top end), refusal counts 2-931 (Refusal_Over_Bluff working beautifully — confident wrong detections refused at scale), scale_anchor mix of detected/not-detected, runtime 966ms-116s per drawing. ≥3 drawings produced ≥500 refusal_candidates each, all now historically queryable via WP-ST-2 audit DB. Total smoke runtime ~10 minutes for full coverage. The audit DB after this run captures the real "refusal pattern across the corpus" — 포비콘's auditability story made concrete.
+- State: SUCCESS
 - Truth:
 
-### 6. Docs + .gitignore + full suite + v0.1.2 git tag | STATUS: PENDING
+### 6. Docs + .gitignore + full suite + v0.1.2 git tag | STATUS: IN_PROGRESS
 - A: { U1-U5 complete }
 - B: {
     docs/CORPUS.md updated with: crawl strategy (Wikimedia primary), source breakdown (synthetic + crawled), license discipline reiterated, link to scripts/crawl_corpus.py + crawl_summary.json,
