@@ -43,7 +43,7 @@ WP_Invariants ≜ [
 
 ## Unit-Works
 
-### 1. Audit DB schema + idempotent migration runner | STATUS: IN_PROGRESS
+### 1. Audit DB schema + idempotent migration runner | STATUS: COMPLETED
 - A: { db_path: Path, schema_version_target: 1 }
 - B: { sqlite_file_created_or_present: ⊤, schema_meta_table_present: ⊤, PRAGMA_user_version=1, tables_created: [runs, stage_events, epistemic_counts, refusals_log, policy_fires, schema_meta], indices_created: [idx_stage_events_run_id, idx_refusals_run_id, idx_policy_fires_run_id, idx_runs_drawing_id], migration_idempotent: ⊤ }
 - P: Python 3.11+; project_dir writable
@@ -56,12 +56,12 @@ WP_Invariants ≜ [
   - `PRAGMA user_version` returns 1
   - All datetime columns declared TEXT (not INTEGER/REAL)
   - `pytest tests/test_audit_schema.py` covers fresh-create, re-open, table presence, version check
-- Tags: [defining-schema, migrating-sqlite, anchoring-version]
-- Result:
-- State:
+- Tags: [defining-schema, migrating-sqlite, anchoring-version, indexing-fks]
+- Result: src/cad_trust/audit_schema.py defines schema v1 via stdlib sqlite3. 6 tables (runs / stage_events / epistemic_counts / refusals_log / policy_fires / schema_meta) + 5 indices (idx_stage_events_run_id, idx_refusals_run_id, idx_policy_fires_run_id, idx_runs_drawing_id, idx_refusals_attempted_type). PRAGMA user_version = 1 gates migrations. init_audit_db(path) is idempotent: returns immediately when user_version == SCHEMA_VERSION; refuses downgrade when user_version > SCHEMA_VERSION; auto-creates parent dirs; supports `:memory:` path. All datetime columns declared TEXT (ISO8601 UTC). schema_meta table records 'schema_version' → '1'. pytest tests/test_audit_schema.py 8/8 PASSED in 0.04s.
+- State: SUCCESS
 - Truth:
 
-### 2. AuditContext API + connection management | STATUS: PENDING
+### 2. AuditContext API + connection management | STATUS: IN_PROGRESS
 - A: { db_path: Path, drawing_id: 𝕊 }
 - B: AuditContext context manager that:
   - on `__enter__`: opens connection, inserts row in `runs` with run_id (uuid4) + drawing_id + started_at + exit_state="in_progress", returns self,
