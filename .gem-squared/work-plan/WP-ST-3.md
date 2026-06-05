@@ -73,7 +73,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 2. Download + sha256 + provenance.json generation + refusal log | STATUS: IN_PROGRESS
+### 2. Download + sha256 + provenance.json generation + refusal log | STATUS: COMPLETED
 - A: { candidates: list[Candidate] (from U1), out_samples_dir: Path, out_provenance_dir: Path, audit_log_path: Path }
 - B: {
     `download_and_record(candidates, ...)` function appended to scripts/crawl_corpus.py:
@@ -96,12 +96,12 @@ WP_Invariants ≜ [
   - sha256 deduplication: re-running on same candidate is idempotent (no duplicate)
   - Summary JSON written to audit_log_path, validates as dict with required keys
   - `pytest tests/test_crawl_download.py` covers all 4 paths with monkeypatched urllib
-- Tags: [downloading-images, recording-provenance, refusing-uncategorized]
-- Result:
-- State:
+- Tags: [downloading-images, recording-provenance, refusing-uncategorized, deduping-sha256]
+- Result: download_and_record() in scripts/crawl_corpus.py implements the 4 paths. License-refused: NEVER hits network — license_mapped=None → refused_by_license + log entry with stage="license_check". HTTP non-200: refused_by_404 + log entry with stage="download". Bytes < MIN_BYTES (8KB): refused_by_too_small + log entry with stage="size_check". Valid: writes file with safe_stem (wm_ prefix to avoid collision with synth_), writes provenance JSON validated against ProvenanceRecord (license_mapped + sha256 + fetched_at + original_uri + usage=demo-only + domain=global), updates by_source counter. sha256 dedup pre-loaded from existing data/provenance/ on init + re-checked per candidate; re-run on same bytes (different filename) → no duplicate. CrawlSummary dataclass persists to audit_log_path as JSON; incremental writes. **Retry-1 fix** (caught + fixed mid-execution): out_image.relative_to(ROOT) raised ValueError when tmp_path was outside project root in tests; wrapped in try/except with absolute-path fallback. pytest tests/test_crawl_download.py 6/6 PASSED in 0.05s: refuses unmapped license (zero network calls), refuses HTTP 404, refuses too-small, downloads + writes file + provenance validates, dedup idempotent, summary JSON has 9 required keys.
+- State: SUCCESS (retried=⊤)
 - Truth:
 
-### 3. Execute the crawl — populate data/samples/ with real drawings | STATUS: PENDING
+### 3. Execute the crawl — populate data/samples/ with real drawings | STATUS: IN_PROGRESS
 - A: { target_count: 20, categories_to_query: ["Floor plans", "Architectural drawings", "House plans"], out_samples_dir: data/samples/, out_provenance_dir: data/provenance/, audit_log_path: .gem-squared/crawl_summary.json }
 - B: {
     scripts/crawl_corpus.py invoked as `__main__` (CLI) — runs the crawl,

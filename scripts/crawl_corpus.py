@@ -54,7 +54,7 @@ class Candidate:
 @dataclasses.dataclass
 class CrawlSummary:
     started_at: str
-    completed_at: str | None
+    completed_at: str | None = None
     downloaded: int = 0
     refused_by_license: int = 0
     refused_by_404: int = 0

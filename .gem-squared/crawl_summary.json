@@ -1,0 +1,177 @@
+{
+  "started_at": "2026-06-05T15:00:35Z",
+  "completed_at": "2026-06-05T15:01:21Z",
+  "downloaded": 22,
+  "refused_by_license": 27,
+  "refused_by_404": 0,
+  "refused_by_too_small": 1,
+  "by_source": {
+    "wikimedia_commons": 22
+  },
+  "refused_details": [
+    {
+      "filename": "File:1822 Ornamental Hot-House Window Harwood Folliott Building Plan Antique Fisher.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:1827 A Double Vinery Building Plan Antique Illustration Print Fisher W Mallinson.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:214 of 'Aus Kaukasischen L\u00e4ndern. Reisebriefe von H. Abich. Herausgegeben von dessen Witwe (A. Abich)' (11143937356).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:256 of 'The Histories of Launceston and Dunheved, etc' (11175851233).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:311 of 'Mathur\u00e1- a District Memoir. By F. S. Growse ... Second edition. Illustrated, revised and enlarged' (11137426104).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:381 of 'Reisen und Entdeckungen in Nord- und Central-Afrika in den Jahren 1849 bis 1855. Im Auszuge bearbeitet' (11237768386).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:43 of 'La santa Casa de Loyola ... Estudio hist\u00f3rico ilustrado' (11298266395).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:43 of 'Object Lessons in Geography for Standards I. II. & III' (11250345353).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:520 of '(Sinai and Palestine, in connection with their history.)' (11024799303).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:93 of 'Narrative of a Year's Journey through Central and Eastern Arabia (1862-63), etc. (With maps and plans.)' (11069742984).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:97 of 'Deutsche Volkskunde ... Mit siebzehn Abbildungen und einer Karte' (11152700155).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:Ba\u011f kiri\u015fli perde par\u00e7alar\u0131.png",
+      "reason": "license could not be mapped (raw: 'Copyrighted free use')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:Tips-Technology.svg",
+      "reason": "image too small (4553 bytes < 8192)",
+      "stage": "size_check"
+    },
+    {
+      "filename": "File:A description of Bath Fleuron T064760-17.png",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:A treatise on theatres. By George Saunders. Fleuron T117829-21.png",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:Architectural Drawing of a Garden MET EG14.108.jpeg",
+      "reason": "license could not be mapped (raw: 'cc0')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:\"B\" building (of Sheppard Asylum), sub basement plan - (16294913758).jpg",
+      "reason": "license could not be mapped (raw: 'No restrictions')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:00019.BH--Reinforced Oil House (d1ac2b92-d1d1-423d-b796-bc6b7f5606fc).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:00091.BH--Coal trestle--Stirling, NJ (412045da-780d-40f3-abd6-1a360f833617).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:00092.BN--Retail coal pocket--Location plan--Geddes Yard--Syracuse, NY (f00864ff-fb9b-4bb1-b250-753bf28774be).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:00104.BM--Cross section of ash pits--Wabash Railroad--Decatur, IL (50f7feda-0ce0-4966-b344-025ceb47a99b).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:00156.BA001--Hoboken Ferry Company--Foundations against property line showing proposed fire wall--23rd Street Ferry Terminal (6433716c-1fae-49c1-98ba-f95293539613).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:1647733 Page 1.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:1853 Charles Barry .49.png",
+      "reason": "license could not be mapped (raw: 'cc0')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:1902 Architektonische Hochbau-Muster-Hefte, 11.1, S. 21 Otto L\u00fcer Zeichnung Stallgebaeude mit Kutscherwohnung in Hildesheim.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:20342-5.BL-East Orange, NJ--East Orange Improvements--15th Street subway (df8215e8-b0fb-4c2e-bf0d-749d15197ccb).jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:A Handbook of Indian Art - Plate 41b.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    },
+    {
+      "filename": "File:A.V.Kozolov Blueprints.jpg",
+      "reason": "license could not be mapped (raw: 'pd')",
+      "stage": "license_check"
+    }
+  ],
+  "downloaded_files": [
+    "data/samples/wm_2689-atlantic-print.svg",
+    "data/samples/wm_76_plan.png",
+    "data/samples/wm_peak_ground_velocity_o_grande_paesaggio.jpg",
+    "data/samples/wm_a_floor_plan_of_oulu_s_seurahuone_1938_jokakal3b-4037.png",
+    "data/samples/wm_a04_-_denah_lantai_1_model_1.png",
+    "data/samples/wm_affordable_palace_opposite_office_floorplan1-500.jpg",
+    "data/samples/wm_ah_r_k_k_plan.svg",
+    "data/samples/wm_akademia_wsb_w_d_browie_g_rniczej_-_003.jpg",
+    "data/samples/wm_all_hands_2019_bently_reserve_first_floor.png",
+    "data/samples/wm_all_hands_2019_bently_reserve_second_floor.png",
+    "data/samples/wm_aanzichten_bouwplan.png",
+    "data/samples/wm_architectural_projections.png",
+    "data/samples/wm_02_bro_park_2000.jpg",
+    "data/samples/wm_02l.jpg",
+    "data/samples/wm_03l.jpg",
+    "data/samples/wm_1_photo_-_16.jpg",
+    "data/samples/wm_1_2-3d_model.pdf",
+    "data/samples/wm_2-cilindri.jpg",
+    "data/samples/wm_2014_siedlungshaus_bredenfelde.jpg",
+    "data/samples/wm_3dpraxisstudio.jpg",
+    "data/samples/wm_4thnatbank.png",
+    "data/samples/wm_a_cross-section_of_an_anatomy_theatre_watercolour_by_charle_wellcome_v0010451.jpg"
+  ]
+}
