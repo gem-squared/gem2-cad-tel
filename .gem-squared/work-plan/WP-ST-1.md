@@ -42,7 +42,7 @@ WP_Invariants ≜ [
 
 ## Unit-Works
 
-### 1. Bootstrap project skeleton + git + Python deps | STATUS: IN_PROGRESS
+### 1. Bootstrap project skeleton + git + Python deps | STATUS: COMPLETED
 - A: empty repo at /Users/inseokseo/GEM-Squared-Universe/gem2-vision (no git, no pyproject)
 - B: { git_initialized: ⊤, branch: "main", initial_commit: ⊤, pyproject.toml present, src/cad_trust/ + tests/ + data/samples/ + data/provenance/ + ui/ + docs/ scaffolded, .gitignore extended for Python, README.md stub present, virtualenv working, deps installed (opencv-python, paddleocr, paddlepaddle CPU, pdf2image, streamlit, fastapi, pydantic, pytest), paddleocr_smoke_passed: ⊤ }
 - P: project_dir exists, Python 3.11+ available locally
@@ -54,12 +54,12 @@ WP_Invariants ≜ [
   - PaddleOCR smoke: loads ko+en model + OCRs a fixture image, returns non-empty text list (catches platform install failures BEFORE U6 blocks on it)
   - `pytest` exits 0 (even with 0 tests collected — proves harness wired)
   - All scaffolded directories present per B
-- Tags: [bootstrapping-project, initializing-git, scaffolding-python]
-- Result:
-- State:
+- Tags: [bootstrapping-project, initializing-git, scaffolding-python, installing-paddleocr, smoke-testing-env]
+- Result: git initialized on main with commit fe92a12 ("U1: bootstrap gem2-vision"); pyproject.toml v0.1.0 declares 13 deps; .venv created via `uv venv --python 3.12` (Python 3.12.9 cpython); all deps installed cleanly INCLUDING paddlepaddle on Apple Silicon (the load-bearing risk); 6 scaffolded dirs present (src/cad_trust/, tests/fixtures/, data/samples/, data/provenance/, ui/, docs/); PaddleOCR smoke fixture tests/fixtures/smoke_text.png generated via PIL; tests/test_smoke_env.py contains 2 tests covering load-bearing imports + ko+en model load + OCR call; `pytest tests/test_smoke_env.py` PASSED 2/2 in 48.11s (PaddleOCR model downloaded from HuggingFace + ran inference cleanly). Apple Silicon install risk RESOLVED.
+- State: SUCCESS
 - Truth:
 
-### 2. Output Contract + Pydantic schemas + golden JSON + Corpus provenance schema + license policy | STATUS: PENDING
+### 2. Output Contract + Pydantic schemas + golden JSON + Corpus provenance schema + license policy | STATUS: IN_PROGRESS
 - A: { contract_target: "src/cad_trust/schema.py", golden_target: "tests/fixtures/golden_output.json", contract_doc: "docs/OUTPUT_CONTRACT.md", provenance_target: "src/cad_trust/provenance.py", corpus_doc: "docs/CORPUS.md" }
 - B: {
     pydantic_schemas: src/cad_trust/schema.py defining {
