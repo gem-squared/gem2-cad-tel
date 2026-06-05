@@ -1,5 +1,5 @@
 # WP-ST-1: CAD Trust Engine Lite v0.1 — PNG/PDF floor plan → per-field EEF-tagged JSON + review UI
-**STATUS:** IN_PROGRESS | **STATE:** — | **task_id:** f3203e2e
+**STATUS:** COMPLETED | **STATE:** SUCCESS | **task_id:** f3203e2e
 **created_at:** 2026-06-05T13:36:40Z | **updated_at:** 2026-06-05T13:36:40Z (post /update-work-plan)
 **project_slug:** gem2-vision
 
@@ -218,7 +218,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 9. Review_UI (Streamlit) + README + 5 demo scenarios (1 explicitly Korean apt 적산) + Korean pitch | STATUS: IN_PROGRESS
+### 9. Review_UI (Streamlit) + README + 5 demo scenarios (1 explicitly Korean apt 적산) + Korean pitch | STATUS: COMPLETED
 - A: { full EngineOutput (from U8), 10-30 corpus drawings (from U3) }
 - B: {
     ui/app.py: Streamlit app — file picker → run pipeline → overlay PNG with bbox/polyline/polygon colored by type + refusal heatmap layer + object table + per-object evidence panel + JSON download button,
@@ -244,9 +244,9 @@ WP_Invariants ≜ [
   - README's "Limitations" section explicitly lists VLM_Verify, synthetic generator, automated crawler, DWG ingest, full taint propagation as deferred (v0.2 / v0.3)
   - POBICON_PITCH.ko.md contains the locked Korean positioning text (3-way alignment phrasing)
   - `git tag v0.1.0` exists on main
-- Tags: [building-ui, packaging-demo, writing-readme]
-- Result:
-- State:
+- Tags: [building-ui, packaging-demo, writing-readme, writing-korean-pitch, tagging-release]
+- Result: src/cad_trust/pipeline.py provides single run(drawing_path) entrypoint wiring U4→U5→U6→U7→U8 into one call. ui/app.py is the Streamlit review UI: file picker (corpus dropdown + upload), Run Engine button, two-column layout with overlay PNG (objects colored by type + refusal heatmap) + scale_anchor banner (success or Korean refusal message per Measurement_Policy: "벽체 후보는 검출되었지만, 신뢰 가능한 치수 기준점이 없어 mm 단위 산출에는 포함하지 않았습니다. 검수자 확인이 필요합니다.") + aggregates JSON + refusals warnings, object table with per-field epistemic badges (🟢⊢ 🔵⊨ 🟡⊬ 🔴⊥), per-object Evidence Panel expander drilling into type/geometry/measurement claims with source+signal per evidence, JSON download button. docs/README.md is the engineering thesis (TPMN posture / EEF / Measurement Policy / Refusal Over Bluff / architecture diagram / scope / honest limitations / v0.2-v0.3 roadmap). docs/DEMO_SCENARIOS.md walks through 5 scenarios — Scenario 4 is the LOAD-BEARING Korean apartment 적산 measurement refusal with the explicit Korean message; Scenario 5 demonstrates symbol refusal_candidate promotion. docs/POBICON_PITCH.ko.md contains the 3-way-aligned Korean positioning text. root README.md provides quickstart + doc index. **Smoke verifications**: `streamlit run ui/app.py` launches + serves HTTP 200 on localhost (visual UI verification deferred to David's browser eyes per environmental limit). **Full regression**: pytest 53/53 PASSED in 40.05s across all 8 unit modules (schema/corpus/ingest/geometry/ocr/symbols/compose/smoke). **`git tag v0.1.0` created** with full WP completion message.
+- State: SUCCESS
 - Truth:
 
 ---
