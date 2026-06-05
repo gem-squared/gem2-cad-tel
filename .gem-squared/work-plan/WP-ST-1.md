@@ -167,7 +167,7 @@ WP_Invariants ≜ [
 - State: SUCCESS (retried=⊤)
 - Truth:
 
-### 7. Symbol_F — rule-based door / window / space with EXPLICIT refusal fallback | STATUS: IN_PROGRESS
+### 7. Symbol_F — rule-based door / window / space with EXPLICIT refusal fallback | STATUS: COMPLETED
 - A: { canonical_image, wall_candidates (from U5), contours (from U5), texts (from U6) }
 - B: {
     doors: Seq[{bbox, arc_center, arc_radius, evidence: {source: "opencv_arc", signal: "arc + opening in wall gap"}}],
@@ -186,12 +186,12 @@ WP_Invariants ≜ [
   - Every `refusal_candidates[*].why_refused` is human-readable specific text (no "unknown" / no "error")
   - On FloorPlanCAD fixture: total |doors| + |windows| + |spaces| + |refusal_candidates| ≥ 1 (proves pipeline never silently empty)
   - Property test: confidence-too-low candidates SHALL appear in refusal_candidates, NOT in doors/windows/spaces
-- Tags: [detecting-symbols, refusing-uncertain, finding-doors]
-- Result:
-- State:
+- Tags: [detecting-symbols, refusing-uncertain, finding-doors, finding-windows, gating-evidence-threshold]
+- Result: src/cad_trust/symbols.py implements detect_symbols(canonical_image, geometry, ocr) → SymbolResult {doors, windows, spaces, refusal_candidates, diagnostic}. Doors detected via cv2.HoughCircles (radius 25-90px) + 2-signal evidence threshold: signal 1 = arc detected; signal 2 = wall_proximity (arc center within (r+8px) of a wall_candidate). Windows detected via tight HoughLinesP (threshold=40, minLineLength=40, maxLineGap=4) + parallel-pair filter (gap ∈ [3,14]px) + 2-signal threshold: signal 1 = parallel pair; signal 2 = midpoint sits on wall_candidate. Spaces from closed contours (area > 20000px²) tagged with enclosing OCR room_label when found. **Refusal_Over_Bluff implementation**: any candidate region with <2 evidence signals is emitted to refusal_candidates (with attempted_type + why_refused as specific text >10 chars), NEVER as a low-confidence door/window. pytest tests/test_symbols.py 5/5 PASSED in 14.64s: empty input typed result, every detection has evidence, no detection with <2 signals (refusal_candidates absorb them), every refusal.why_refused is specific text never "unknown", pipeline never silently empty (|doors|+|windows|+|spaces|+|refusals| ≥ 1 on every corpus sample).
+- State: SUCCESS
 - Truth:
 
-### 8. Compose_F + Aggregate_F — per-field EEF + refusals + scale-anchor policy + aggregates | STATUS: PENDING
+### 8. Compose_F + Aggregate_F — per-field EEF + refusals + scale-anchor policy + aggregates | STATUS: IN_PROGRESS
 - A: { lines, contours, wall_candidates (U5), texts (U6), doors, windows, spaces, refusal_candidates (U7) }
 - B: full EngineOutput per U2 schema = {
     drawing_id: str,
