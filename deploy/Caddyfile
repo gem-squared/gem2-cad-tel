@@ -1,0 +1,76 @@
+# Caddy config — auto-TLS when DOMAIN is set, plain :80 otherwise.
+#
+# When DOMAIN env var is non-empty, Caddy treats it as the canonical hostname
+# and issues a Let's Encrypt cert automatically. When unset (or empty),
+# Caddy listens on :80 only and serves the app over plain HTTP.
+#
+# Both branches reverse-proxy to streamlit:8501 (the docker-compose service name).
+
+{
+    # Global options
+    email cadtrust-deploy@gineers.ai
+    # Disable admin API to reduce attack surface
+    admin off
+}
+
+# If DOMAIN is set, this block matches it. If DOMAIN is unset/empty,
+# Caddy ignores this block (no listener bound) and the :80 block takes over.
+{$DOMAIN} {
+    encode zstd gzip
+
+    # Streamlit needs WebSocket support for its server-rendered runtime
+    @websockets {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+
+    reverse_proxy streamlit:8501 {
+        # WebSocket header passthrough
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+
+        # Generous timeouts — Streamlit page loads can be slow on cold start
+        # and the pipeline run can take 60s+ on complex drawings
+        transport http {
+            read_timeout 300s
+            write_timeout 300s
+        }
+    }
+
+    log {
+        output stdout
+        format console
+        level INFO
+    }
+}
+
+# Plain HTTP listener — used when DOMAIN is unset (IP-only access),
+# also serves as the Let's Encrypt http-01 challenge endpoint when DOMAIN is set
+:80 {
+    encode zstd gzip
+
+    @websockets {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+
+    reverse_proxy streamlit:8501 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+
+        transport http {
+            read_timeout 300s
+            write_timeout 300s
+        }
+    }
+
+    log {
+        output stdout
+        format console
+        level INFO
+    }
+}
