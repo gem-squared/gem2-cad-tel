@@ -4,7 +4,7 @@
 ## Current Status
 **Branch:** main  |  **Tags:** v0.1.0, v0.1.1
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 2 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 2 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
 > **WP-ST-2 COMPLETED|SUCCESS 2026-06-05** — Audit Subsystem v0.1.1.
 > 6 unit-works delivered autonomously. 91/91 tests pass (53 backward-compat
@@ -22,7 +22,10 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 2 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-2 | CAD Trust Engine Audit Subsystem v0.1.1 — SQLite audit/logging | 09750a81 | 6 | tag v0.1.1; 91/91 tests (53 backward-compat + 38 audit); 0 retries; 6 commits |
 
 ### PENDING (not started)
-(none)
+
+| WP | Title | task_id | Units | Avg Clarity |
+|----|-------|---------|-------|-------------|
+| WP-ST-3 | Crawl real public-source CAD/floor plan drawings — v0.1.2 corpus expansion | f6316037 | 6 | 83% |
 
 ### DEFERRED
 (none)
