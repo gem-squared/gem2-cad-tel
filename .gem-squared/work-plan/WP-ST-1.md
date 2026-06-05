@@ -151,7 +151,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 6. OCR_F — PaddleOCR ko+en + dimension/label classification | STATUS: IN_PROGRESS
+### 6. OCR_F — PaddleOCR ko+en + dimension/label classification | STATUS: COMPLETED
 - A: canonical_image (from U4)
 - B: { texts: Seq[{text, bbox, char_conf, classification: {dimension_text, room_label, other}, evidence: {source: "paddleocr", raw_score}}] }
 - P: PaddleOCR ko+en models downloaded (validated in U1 smoke); canonical_image dpi ≥ 150
@@ -162,12 +162,12 @@ WP_Invariants ≜ [
   - Detects ≥1 text on FloorPlanCAD fixture
   - Classification regex correctly tags "4200" as dimension_text and "거실" as room_label on hand-crafted fixture
   - Empty texts returns typed `OCRResult` with empty list + diagnostic, NEVER silent None
-- Tags: [recognizing-text, parsing-dimensions, classifying-labels]
-- Result:
-- State:
+- Tags: [recognizing-text, parsing-dimensions, classifying-labels, filtering-empty-detections]
+- Result: src/cad_trust/ocr.py implements run_ocr(canonical_image) → OCRResult. Lazy PaddleOCR singleton (lang="korean", use_doc_orientation_classify=False, use_doc_unwarping=False) — model load happens once + reused. PaddleOCR 3.x output parsed via rec_texts / rec_scores / rec_polys (or dt_polys fallback). Classification heuristic: DIMENSION_RE = `^\d{2,5}(\.\d+)?$` → dimension_text; Hangul or Latin via ROOM_LABEL_RE → room_label; else other. Empty / too-small input → typed OCRResult with diagnostic ("empty input image" or "image too small"). Each TextDetection carries text + 4-point bbox quad + char_conf + classification + evidence. **Retry-1 fix**: PaddleOCR detector occasionally emits a region with empty recognized text (detector hit + recognizer blank) — v0.1 filters these as noise and surfaces the dropped count in diagnostic. pytest tests/test_ocr.py 7/7 PASSED in 5.36s after retry: 4 classifier unit tests (dimension/Hangul/Latin/other), empty input typed result, too-small typed result, end-to-end on Korean apt sample with PaddleOCR-loaded-from-cache returning ≥1 text where every detection carries evidence.
+- State: SUCCESS (retried=⊤)
 - Truth:
 
-### 7. Symbol_F — rule-based door / window / space with EXPLICIT refusal fallback | STATUS: PENDING
+### 7. Symbol_F — rule-based door / window / space with EXPLICIT refusal fallback | STATUS: IN_PROGRESS
 - A: { canonical_image, wall_candidates (from U5), contours (from U5), texts (from U6) }
 - B: {
     doors: Seq[{bbox, arc_center, arc_radius, evidence: {source: "opencv_arc", signal: "arc + opening in wall gap"}}],
