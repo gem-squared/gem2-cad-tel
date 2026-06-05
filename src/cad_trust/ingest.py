@@ -17,9 +17,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PIL import Image
+
+if TYPE_CHECKING:
+    from cad_trust.audit import AuditContext
 
 
 class IngestError(Exception):
@@ -111,16 +115,44 @@ def _ingest_pdf(path: Path, dpi_target: int) -> IngestResult:
     )
 
 
-def ingest(drawing_path: Path | str, dpi_target: int = 200) -> IngestResult:
-    """Public entry. PNG → direct PIL load. PDF → pdf2image (poppler). Other → IngestError."""
+def ingest(
+    drawing_path: Path | str,
+    dpi_target: int = 200,
+    audit: "AuditContext | None" = None,
+) -> IngestResult:
+    """Public entry. PNG → direct PIL load. PDF → pdf2image (poppler). Other → IngestError.
+
+    `audit` is an optional AuditContext. When provided, emits stage_events
+    for entry / exit / failure. Default None → no overhead, no schema change.
+    """
     path = Path(drawing_path)
-    if not path.exists():
-        raise IngestError(f"file not found: {path}")
-    if not path.is_file():
-        raise IngestError(f"not a regular file: {path}")
-    suffix = path.suffix.lower()
-    if suffix == ".png":
-        return _ingest_png(path)
-    if suffix == ".pdf":
-        return _ingest_pdf(path, dpi_target=dpi_target)
-    raise IngestError(f"unsupported format {suffix} (v0.1 supports .png + .pdf only)")
+    if audit is not None:
+        audit.emit_stage_event("ingest", "INFO", "starting", {"path": str(path), "dpi_target": dpi_target})
+    try:
+        if not path.exists():
+            raise IngestError(f"file not found: {path}")
+        if not path.is_file():
+            raise IngestError(f"not a regular file: {path}")
+        suffix = path.suffix.lower()
+        if suffix == ".png":
+            result = _ingest_png(path)
+        elif suffix == ".pdf":
+            result = _ingest_pdf(path, dpi_target=dpi_target)
+        else:
+            raise IngestError(f"unsupported format {suffix} (v0.1 supports .png + .pdf only)")
+    except IngestError as exc:
+        if audit is not None:
+            audit.emit_stage_event("ingest", "ERROR", "ingest failed", {"error": str(exc)})
+        raise
+    if audit is not None:
+        audit.emit_stage_event(
+            "ingest",
+            "INFO",
+            "complete",
+            {
+                "source_format": result.source_format,
+                "page_count": result.ingest_metadata.page_count,
+                "original_dims": list(result.original_dims),
+            },
+        )
+    return result

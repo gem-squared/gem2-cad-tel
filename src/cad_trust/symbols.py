@@ -14,12 +14,16 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
 
 from cad_trust.geometry import Evidence, GeometryResult, WallCandidate
 from cad_trust.ocr import OCRResult, TextDetection
+
+if TYPE_CHECKING:
+    from cad_trust.audit import AuditContext
 
 # Tunables
 ARC_MIN_RADIUS = 25
@@ -323,13 +327,21 @@ def _point_in_polygon(px: float, py: float, polygon: list[tuple[float, float]]) 
 
 
 def detect_symbols(
-    canonical_image: np.ndarray, geometry: GeometryResult, ocr: OCRResult
+    canonical_image: np.ndarray,
+    geometry: GeometryResult,
+    ocr: OCRResult,
+    audit: "AuditContext | None" = None,
 ) -> SymbolResult:
+    if audit is not None:
+        audit.emit_stage_event("symbols", "INFO", "starting")
     if canonical_image is None or canonical_image.size == 0:
-        return SymbolResult(
+        result = SymbolResult(
             doors=[], windows=[], spaces=[], refusal_candidates=[],
             diagnostic="empty input image"
         )
+        if audit is not None:
+            audit.emit_stage_event("symbols", "WARN", "empty input", {"diagnostic": result.diagnostic})
+        return result
     doors, door_refusals = _detect_door_arcs(canonical_image, geometry.wall_candidates)
     windows, window_refusals = _detect_windows(canonical_image, geometry.wall_candidates)
     spaces = _detect_spaces(geometry, ocr)
@@ -340,10 +352,24 @@ def detect_symbols(
             "no doors, windows, or spaces detected and no refusal_candidates produced — "
             "either drawing is empty or below v0.1 thresholds"
         )
-    return SymbolResult(
+    result = SymbolResult(
         doors=doors,
         windows=windows,
         spaces=spaces,
         refusal_candidates=refusals,
         diagnostic=diagnostic,
     )
+    if audit is not None:
+        audit.emit_stage_event(
+            "symbols",
+            "INFO",
+            "complete",
+            {
+                "doors": len(doors),
+                "windows": len(windows),
+                "spaces": len(spaces),
+                "refusal_candidates": len(refusals),
+                "diagnostic": diagnostic,
+            },
+        )
+    return result

@@ -11,9 +11,13 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
+
+if TYPE_CHECKING:
+    from cad_trust.audit import AuditContext
 
 # Tunables (v0.1 defaults; revisit in v0.2 once real corpus arrives)
 HOUGH_MIN_LINE_LENGTH_PX = 60
@@ -225,14 +229,22 @@ def _pair_lines_into_walls(lines: list[Line]) -> list[WallCandidate]:
     return walls
 
 
-def extract_geometry(canonical_image: np.ndarray) -> GeometryResult:
+def extract_geometry(
+    canonical_image: np.ndarray,
+    audit: "AuditContext | None" = None,
+) -> GeometryResult:
+    if audit is not None:
+        audit.emit_stage_event("geometry", "INFO", "starting")
     if canonical_image is None or canonical_image.size == 0:
-        return GeometryResult(
+        result = GeometryResult(
             lines=[],
             contours=[],
             wall_candidates=[],
             diagnostic="empty input image",
         )
+        if audit is not None:
+            audit.emit_stage_event("geometry", "WARN", "empty input", {"diagnostic": result.diagnostic})
+        return result
     if canonical_image.ndim == 3:
         gray = cv2.cvtColor(canonical_image, cv2.COLOR_RGB2GRAY)
     else:
@@ -248,9 +260,22 @@ def extract_geometry(canonical_image: np.ndarray) -> GeometryResult:
             "no wall_candidates produced — either no parallel pairs survived gap/overlap thresholds, "
             "or walls are drawn too thin for v0.1 thresholds"
         )
-    return GeometryResult(
+    result = GeometryResult(
         lines=lines,
         contours=contours,
         wall_candidates=walls,
         diagnostic=" | ".join(diag_parts),
     )
+    if audit is not None:
+        audit.emit_stage_event(
+            "geometry",
+            "INFO",
+            "complete",
+            {
+                "lines": len(lines),
+                "contours": len(contours),
+                "wall_candidates": len(walls),
+                "diagnostic": result.diagnostic,
+            },
+        )
+    return result

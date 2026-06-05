@@ -14,9 +14,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from cad_trust.audit import AuditContext
 
 
 @dataclass
@@ -114,20 +117,37 @@ def _extract_from_result(raw: object) -> tuple[list[str], list[list[tuple[float,
     return texts, quads, scores
 
 
-def run_ocr(canonical_image: np.ndarray) -> OCRResult:
+def run_ocr(
+    canonical_image: np.ndarray,
+    audit: "AuditContext | None" = None,
+) -> OCRResult:
     """Run PaddleOCR on a canonical raster + classify each detection."""
+    if audit is not None:
+        audit.emit_stage_event("ocr", "INFO", "starting")
     if canonical_image is None or canonical_image.size == 0:
-        return OCRResult(texts=[], diagnostic="empty input image")
+        result = OCRResult(texts=[], diagnostic="empty input image")
+        if audit is not None:
+            audit.emit_stage_event("ocr", "WARN", "empty input", {"diagnostic": result.diagnostic})
+        return result
     if canonical_image.ndim != 3 or canonical_image.shape[2] != 3:
-        return OCRResult(texts=[], diagnostic="expected (H,W,3) uint8 image")
+        result = OCRResult(texts=[], diagnostic="expected (H,W,3) uint8 image")
+        if audit is not None:
+            audit.emit_stage_event("ocr", "WARN", "bad shape", {"diagnostic": result.diagnostic})
+        return result
     h, _, _ = canonical_image.shape
     if h < 50:
-        return OCRResult(texts=[], diagnostic=f"image too small (h={h}<50)")
+        result = OCRResult(texts=[], diagnostic=f"image too small (h={h}<50)")
+        if audit is not None:
+            audit.emit_stage_event("ocr", "WARN", "too small", {"diagnostic": result.diagnostic})
+        return result
     try:
         ocr = _LazyPaddleOCR.get().ocr
         raw = ocr.predict(canonical_image)
     except Exception as exc:
-        return OCRResult(texts=[], diagnostic=f"PaddleOCR.predict raised: {exc}")
+        result = OCRResult(texts=[], diagnostic=f"PaddleOCR.predict raised: {exc}")
+        if audit is not None:
+            audit.emit_stage_event("ocr", "ERROR", "predict raised", {"error": str(exc)})
+        return result
     texts_raw, quads, scores = _extract_from_result(raw)
     if not texts_raw:
         return OCRResult(texts=[], diagnostic="PaddleOCR returned 0 text detections")
@@ -156,4 +176,15 @@ def run_ocr(canonical_image: np.ndarray) -> OCRResult:
     diag = ""
     if skipped_empty:
         diag = f"dropped {skipped_empty} empty-text detection(s) (recognizer returned blank)"
-    return OCRResult(texts=detections, diagnostic=diag)
+    result = OCRResult(texts=detections, diagnostic=diag)
+    if audit is not None:
+        by_class = {"dimension_text": 0, "room_label": 0, "other": 0}
+        for d in detections:
+            by_class[d.classification] = by_class.get(d.classification, 0) + 1
+        audit.emit_stage_event(
+            "ocr",
+            "INFO",
+            "complete",
+            {"total": len(detections), "by_class": by_class, "skipped_empty": skipped_empty},
+        )
+    return result

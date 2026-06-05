@@ -14,7 +14,7 @@ This is THE TPMN heart of the engine.
 from __future__ import annotations
 
 import math
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
 
@@ -33,6 +33,9 @@ from cad_trust.schema import (
     ScaleAnchor,
 )
 from cad_trust.symbols import RefusalCandidate, SymbolResult
+
+if TYPE_CHECKING:
+    from cad_trust.audit import AuditContext
 
 # Scale anchor tolerance: candidate px_per_mm cluster within ±5%
 SCALE_ANCHOR_TOL = 0.05
@@ -391,8 +394,11 @@ def compose(
     geometry: GeometryResult,
     ocr: OCRResult,
     symbols: SymbolResult,
+    audit: "AuditContext | None" = None,
 ) -> EngineOutput:
     """Fuse all stage outputs into a typed, EEF-tagged EngineOutput."""
+    if audit is not None:
+        audit.emit_stage_event("compose", "INFO", "starting")
     scale, scale_signal = _try_extract_scale_anchor(ocr, geometry.wall_candidates)
 
     objects: list[Object] = []
@@ -423,10 +429,61 @@ def compose(
         measured_wall_length_mm=_measured_wall_length_aggregate(objects, scale),
     )
 
-    return EngineOutput(
+    result = EngineOutput(
         drawing_id=drawing_id,
         objects=objects,
         aggregates=aggregates,
         refusals=refusals,
         scale_anchor=scale,
     )
+
+    if audit is not None:
+        # Scale-anchor event
+        audit.emit_stage_event(
+            "compose",
+            "INFO",
+            f"scale_anchor: {scale.detected}",
+            {"detected": scale.detected, "px_per_mm": scale.px_per_mm, "signal": scale_signal},
+        )
+        # Measurement_Policy fire
+        if not scale.detected:
+            mm_affected = sum(
+                1 for o in result.objects
+                if o.measurement_epistemic.tag == "⊥"
+            )
+            audit.record_policy_fire(
+                "Measurement_Policy",
+                {
+                    "reason": "scale_anchor.detected = False",
+                    "mm_fields_refused": mm_affected,
+                    "drawing_id": drawing_id,
+                },
+            )
+        # Refusals — every one gets logged
+        for rc in symbols.refusal_candidates:
+            audit.record_refusal(
+                region=_bbox_to_coords(rc.region),
+                attempted_type=rc.attempted_type,
+                why=rc.why_refused,
+            )
+        # Epistemic distribution rollup — per field, per tag
+        for field_name in ("type_epistemic", "geometry_epistemic", "measurement_epistemic"):
+            tag_counts: dict[str, int] = {}
+            for o in result.objects:
+                mark = getattr(o, field_name)
+                tag_counts[mark.tag] = tag_counts.get(mark.tag, 0) + 1
+            for tag, count in tag_counts.items():
+                audit.record_epistemic_count("compose", tag, field_name, count)
+        # Stage complete
+        audit.emit_stage_event(
+            "compose",
+            "INFO",
+            "complete",
+            {
+                "objects": len(objects),
+                "refusals": len(refusals),
+                "scale_detected": scale.detected,
+            },
+        )
+
+    return result

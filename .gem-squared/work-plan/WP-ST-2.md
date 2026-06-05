@@ -61,7 +61,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 2. AuditContext API + connection management | STATUS: IN_PROGRESS
+### 2. AuditContext API + connection management | STATUS: COMPLETED
 - A: { db_path: Path, drawing_id: 𝕊 }
 - B: AuditContext context manager that:
   - on `__enter__`: opens connection, inserts row in `runs` with run_id (uuid4) + drawing_id + started_at + exit_state="in_progress", returns self,
@@ -82,12 +82,12 @@ WP_Invariants ≜ [
   - record_epistemic_count UPSERTs (run_id, stage, tag, field) composite key
   - When sqlite3 raises mid-method, warnings.warn fires and method returns without re-raising
   - `pytest tests/test_audit_context.py` covers all 6 cases above
-- Tags: [contextmanaging-audit, emitting-events, recording-trust-trail]
-- Result:
-- State:
+- Tags: [contextmanaging-audit, emitting-events, recording-trust-trail, failure-softing-warnings]
+- Result: src/cad_trust/audit.py defines AuditContext class + audit_run() factory. Lifecycle: __enter__ calls init_audit_db (idempotent) + opens connection with row_factory=Row + inserts runs row with exit_state='in_progress'. __exit__ updates the row with completed_at + duration_ms (perf_counter-based) + exit_state ('SUCCESS' iff exc_type is None else 'FAILURE') + error_msg ('{ExcName}: {message}' on failure). Five emission methods all share the failure-soft pattern — sqlite3.Error → warnings.warn + continue, NEVER abort. record_epistemic_count does UPSERT via ON CONFLICT DO UPDATE on (run_id, stage, tag, field) composite key. _now_iso() produces ISO8601 UTC text. _json_dumps falls back to repr() if json.dumps raises. main() is a U4 stub. pytest tests/test_audit_context.py 9/9 PASSED in 0.06s: runs row lifecycle (insert + clean exit + exception exit + reraise), all 4 emission methods (stage_event / refusal / policy_fire / epistemic_count UPSERT), emit-after-exit warns, forced-closed connection mid-context warns (failure-soft proof).
+- State: SUCCESS
 - Truth:
 
-### 3. Pipeline + stage instrumentation (backward-compatible) | STATUS: PENDING
+### 3. Pipeline + stage instrumentation (backward-compatible) | STATUS: IN_PROGRESS
 - A: { existing pipeline.py + ingest/geometry/ocr/symbols/compose modules from WP-ST-1, AuditContext from U2 }
 - B: {
     pipeline.run signature changed to `run(drawing_path, dpi_target=200, audit_db_path=None)` — backward compatible,
