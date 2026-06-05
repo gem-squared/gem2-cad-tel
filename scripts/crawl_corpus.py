@@ -333,7 +333,12 @@ def download_and_record(
         out_prov.write_text(record.model_dump_json(indent=2))
         existing_hashes.add(sha)
         summary.downloaded += 1
-        summary.downloaded_files.append(str(out_image.relative_to(ROOT)))
+        try:
+            rel_path = str(out_image.relative_to(ROOT))
+        except ValueError:
+            # Test or external dir — fall back to absolute path
+            rel_path = str(out_image)
+        summary.downloaded_files.append(rel_path)
         summary.by_source[source_label] = summary.by_source.get(source_label, 0) + 1
         print(f"  + {out_image.name}  license={cand.license_mapped}  sha={sha[:10]}…")
 

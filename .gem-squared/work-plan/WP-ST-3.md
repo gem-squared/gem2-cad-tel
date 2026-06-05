@@ -42,7 +42,7 @@ WP_Invariants ≜ [
 
 ## Unit-Works
 
-### 1. Crawler module + Wikimedia Commons API + license mapping | STATUS: IN_PROGRESS
+### 1. Crawler module + Wikimedia Commons API + license mapping | STATUS: COMPLETED
 - A: { wikimedia_base_url: "https://commons.wikimedia.org/w/api.php", license_mapping_table: dict, user_agent: str }
 - B: {
     scripts/crawl_corpus.py created with:
@@ -68,12 +68,12 @@ WP_Invariants ≜ [
   - Each Candidate has license_raw + license_mapped fields populated (license_mapped may be None when no mapping)
   - User-agent header is sent on every request (verified via dry-run test patching urllib)
   - `pytest tests/test_crawl_client.py` covers license mapping table + mock-response parsing
-- Tags: [building-crawler, mapping-licenses, querying-wikimedia]
-- Result:
-- State:
+- Tags: [building-crawler, mapping-licenses, querying-wikimedia, refusing-unknown-licenses]
+- Result: scripts/crawl_corpus.py (stdlib-only, 350+ LOC) implements WikimediaClient + license-mapping table + safe_stem + infer_extension + download_and_record (U2 territory; see U2 Result for its tests). WikimediaClient.query_category uses generator=categorymembers + prop=imageinfo single-roundtrip with extmetadata License/LicenseShortName/Artist + url/mime/size. map_license uses ordered-prefix matching (longer first to avoid 'cc-by-nc' false-matching 'cc-by-'); No_Source_Bluff enforced — unknown codes → None → caller refuses. safe_stem strips "File:" prefix, lowercases, replaces non-alnum, caps at 80 chars. Polite_Crawling: USER_AGENT='gem2-vision/0.1.2 (educational; david@gineers.ai)', REQUEST_SLEEP_SEC=0.5, handles HTTP 429 / URLError gracefully. pytest tests/test_crawl_client.py 23/23 PASSED in 0.06s: 14 license-mapping cases (cc-by-sa-4.0 → CC-BY-SA, pd-old → public, unknown → None, CC0 plain → None), safe_stem strips & lowercases, infer_extension prefers content-type, query_category mock returns parsed candidates with attribution + correct license mapping + REFUSES candidate with empty extmetadata, query_category sends User-Agent header (Polite_Crawling check), query_category returns [] on HTTP 429 and on bad JSON.
+- State: SUCCESS
 - Truth:
 
-### 2. Download + sha256 + provenance.json generation + refusal log | STATUS: PENDING
+### 2. Download + sha256 + provenance.json generation + refusal log | STATUS: IN_PROGRESS
 - A: { candidates: list[Candidate] (from U1), out_samples_dir: Path, out_provenance_dir: Path, audit_log_path: Path }
 - B: {
     `download_and_record(candidates, ...)` function appended to scripts/crawl_corpus.py:
