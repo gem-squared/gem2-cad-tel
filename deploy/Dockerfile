@@ -10,13 +10,20 @@ LABEL org.opencontainers.image.description="Per-field EEF-tagged JSON + Refusal 
 LABEL org.opencontainers.image.source="https://github.com/gem-squared/gem2-cad-tel"
 LABEL org.opencontainers.image.licenses="MIT-equivalent (proprietary source, public-licensed corpus)"
 
-# System deps — only poppler-utils is strictly required at runtime
-# (pdf2image shells out to pdftoppm); curl is for HEALTHCHECK.
+# System deps:
+# - poppler-utils → pdf2image (PDF page rasterization)
+# - curl          → HEALTHCHECK
+# - libgl1        → required by opencv-contrib-python (transitive dep of paddleocr;
+#                   pip resolves it to the NON-headless variant despite our explicit
+#                   opencv-python-headless pin — both end up installed, but
+#                   contrib loads cv2.so that depends on libGL.so.1)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         poppler-utils \
         curl \
         ca-certificates \
+        libgl1 \
+        libglib2.0-0 \
         tini \
     && rm -rf /var/lib/apt/lists/*
 
