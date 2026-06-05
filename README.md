@@ -4,7 +4,9 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.3** · [포비콘](https://www.pobicon.com) 지원용 MVP · Python 3.11+ · MIT 호환 (소스 비공개, corpus는 공개 라이선스)
+**v0.1.4** · [포비콘](https://www.pobicon.com) 지원용 MVP · Python 3.11+ · MIT 호환 (소스 비공개, corpus는 공개 라이선스)
+
+🟢 **라이브 데모: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — 브라우저에서 바로 클릭 가능. 첫 OCR 호출 시 PaddleOCR 모델 다운로드(~1-2분)로 느릴 수 있음.
 
 > CAD Trust Engine은 단순히 도면 객체를 검출하는 데서 끝나지 않습니다.
 > **각 판단의 근거와 불확실성, 검수가 필요한 영역까지 함께 기록**해, 적산 시스템에 연결 가능한 신뢰 표면(trust surface)을 제공합니다.
@@ -342,8 +344,9 @@ MVP 0.2의 핵심은 fine-tuning이 아니라 **expert CV cross-checking**입니
 - **v0.1.1** — 2026-06-05 · 6 unit · 91 tests · Audit 서브시스템 (SQLite + CLI + Streamlit 탭)
 - **v0.1.2** — 2026-06-05 · 6 unit · 130 tests · Wikimedia corpus (12 → 34장) + JPG ingest
 - **v0.1.3** — 2026-06-06 · 4 unit · 148 tests · License 보정 (34 → 50장) + preview pane
+- **v0.1.4** — 2026-06-06 · 6 unit · Vultr VPS 라이브 배포 (`cad-tel.gemsquared.ai`) · Docker + 호스트 Caddy 통합
 
-4개 work plan(`WP-ST-1` ~ `WP-ST-4`) 모두 `COMPLETED|SUCCESS`, `/archive-work` 대기 중.
+5개 work plan(`WP-ST-1` ~ `WP-ST-5`) 모두 `COMPLETED|SUCCESS`, `/archive-work` 대기 중.
 
 ---
 

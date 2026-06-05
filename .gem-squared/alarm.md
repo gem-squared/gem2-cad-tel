@@ -4,7 +4,7 @@
 ## Current Status
 **Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
 > **WP-ST-4 COMPLETED|SUCCESS 2026-06-06** — License fix + preview pane v0.1.3.
 > 4 unit-works delivered autonomously. 145 fast tests + 3 smoke = 148 total
@@ -25,7 +25,10 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 4 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-4 | v0.1.3 — 'pd' license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | v0.1.3; 148 tests; 1 retry (AST invariant refactor); 4 commits; corpus 34→50; preview pane added |
 
 ### PENDING (not started)
-(none)
+
+| WP | Title | task_id | Units | Avg Clarity |
+|----|-------|---------|-------|-------------|
+| WP-ST-5 | v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy) | 00d8cde5 | 6 | 81% (U5 ★ gated on owner info) |
 
 ### DEFERRED
 (none)

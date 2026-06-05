@@ -43,16 +43,35 @@ wait_for_apt_lock() {
 }
 
 install_docker() {
-    if command -v docker >/dev/null 2>&1 && docker --version >/dev/null 2>&1; then
+    local need_install=0
+    if ! command -v docker >/dev/null 2>&1 || ! docker --version >/dev/null 2>&1; then
+        need_install=1
+    fi
+    if [[ $need_install -eq 1 ]]; then
+        log "installing docker.io via apt..."
+        wait_for_apt_lock
+        $SUDO apt-get update -qq
+        $SUDO apt-get install -y -qq docker.io
+        $SUDO systemctl enable --now docker
+    else
         log "Docker already installed: $(docker --version)"
+    fi
+    # Install compose plugin via the package that exists on this distro.
+    # Ubuntu 24.04: docker-compose-v2 ; Debian 12: docker-compose-plugin
+    if docker compose version >/dev/null 2>&1; then
+        log "docker compose plugin already present: $(docker compose version | head -1)"
         return
     fi
-    log "installing Docker (docker.io + docker-compose-plugin) via apt..."
+    log "installing docker compose plugin..."
     wait_for_apt_lock
-    $SUDO apt-get update -qq
-    $SUDO apt-get install -y -qq docker.io docker-compose-plugin
-    $SUDO systemctl enable --now docker
-    log "Docker installed: $(docker --version)"
+    if $SUDO apt-get install -y -qq docker-compose-v2 2>/dev/null; then
+        log "  installed via docker-compose-v2 (Ubuntu 24.04+)"
+    elif $SUDO apt-get install -y -qq docker-compose-plugin 2>/dev/null; then
+        log "  installed via docker-compose-plugin (Debian/older Ubuntu)"
+    else
+        die "neither docker-compose-v2 nor docker-compose-plugin is installable on this distro — manual install needed"
+    fi
+    log "docker compose: $(docker compose version | head -1)"
 }
 
 install_utilities() {

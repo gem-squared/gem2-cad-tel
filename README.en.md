@@ -4,7 +4,9 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.3** · MVP for [포비콘](https://www.pobicon.com) application · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
+**v0.1.4** · MVP for [포비콘](https://www.pobicon.com) application · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
+
+🟢 **Live demo: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — click through directly in your browser. First OCR call may be slow (~1-2 min) while PaddleOCR downloads models on cold start.
 
 > A detector gives answers.
 > A **CAD Trust Engine** gives **answers, evidence, uncertainty, refusal, and review path** — and remembers them.
@@ -271,8 +273,9 @@ For CLI audit queries:
 - **v0.1.1** — 2026-06-05 · 6 units · 91 tests · Audit subsystem (SQLite + CLI + Streamlit tab)
 - **v0.1.2** — 2026-06-05 · 6 units · 130 tests · Wikimedia corpus (12 → 34 drawings) + JPG ingest
 - **v0.1.3** — 2026-06-06 · 4 units · 148 tests · License fix (34 → 50) + preview pane
+- **v0.1.4** — 2026-06-06 · 6 units · Vultr VPS live deploy (`cad-tel.gemsquared.ai`) · Docker + host Caddy integration
 
-All four work plans (`WP-ST-1` through `WP-ST-4`) are `COMPLETED|SUCCESS` and awaiting `/archive-work`.
+All five work plans (`WP-ST-1` through `WP-ST-5`) are `COMPLETED|SUCCESS` and awaiting `/archive-work`.
 
 ---
 
