@@ -37,7 +37,7 @@ WP_Invariants ≜ [
 
 ## Unit-Works
 
-### 1. License mapping fix — plain "pd" + "public-domain" prefixes + tests | STATUS: IN_PROGRESS
+### 1. License mapping fix — plain "pd" + "public-domain" prefixes + tests | STATUS: COMPLETED
 - A: scripts/crawl_corpus.py _license_mapping_table() with current 9 entries
 - B: {
     _license_mapping_table() extended with ("pd", "public") and ("public-domain", "public")
@@ -54,12 +54,12 @@ WP_Invariants ≜ [
   - tests/test_crawl_client.py: 4 new test cases pass — map_license("pd") == "public", map_license("public-domain") == "public", map_license("PD-old") == "public" (regression — longer match still wins), map_license("custom-corporate-eula") is None (No_Source_Bluff unchanged)
   - All 23 existing test_crawl_client.py tests still pass
   - 2-line patch in scripts/crawl_corpus.py — minimal diff
-- Tags: [extending-license-table, fixing-pd-mapping, preserving-no-source-bluff]
-- Result:
-- State:
+- Tags: [extending-license-table, fixing-pd-mapping, preserving-no-source-bluff, refactoring-matcher]
+- Result: Refactored _license_mapping_table() entries from (prefix, mapped) 2-tuple to (pattern, kind, mapped) 3-tuple where kind ∈ {"exact", "prefix"}. This prevents the false-match edge case where plain "pd" prefix would catch "pdf" / "pdq" / "pdf-license" → "public" (No_Source_Bluff violation). The "pd-" prefix entry still wins for "pd-old" / "pd-self" (placed before "pd" exact in table). NEW mappings: plain "pd" (exact, was 27 candidates refused in WP-ST-3), "cc0" (exact, was returning None), "public-domain" (exact, alt form). map_license() dispatches on kind. pytest tests/test_crawl_client.py 30/30 PASSED in 0.07s (23 original + 7 new): parametrized cases include pd→public / public-domain→public / cc0→public; regression test ensures pd-old still maps via "pd-" prefix; new no-source-bluff tests verify pdf/pdf-license/pdq/private/custom-corporate-eula all return None.
+- State: SUCCESS
 - Truth:
 
-### 2. Re-crawl execution — acquire previously-refused public-domain drawings | STATUS: PENDING
+### 2. Re-crawl execution — acquire previously-refused public-domain drawings | STATUS: IN_PROGRESS
 - A: { extended license mapping (U1), existing 22 Wikimedia + 12 synthetic drawings, sha256 dedup from data/provenance/ }
 - B: {
     `python scripts/crawl_corpus.py --target 25` executed,
