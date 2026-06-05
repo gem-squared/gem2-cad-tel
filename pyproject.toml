@@ -8,7 +8,9 @@ license = { text = "Proprietary" }
 readme = "README.md"
 
 dependencies = [
-    "opencv-python>=4.10.0",
+    # opencv-python-headless: no X11 system libs needed (works in containers, Streamlit Cloud, etc.)
+    # Functionally identical to opencv-python for our code (no cv2.imshow / cv2.waitKey usage).
+    "opencv-python-headless>=4.10.0",
     "numpy>=1.26,<2.2",
     "pdf2image>=1.17.0",
     "pillow>=10.4.0",

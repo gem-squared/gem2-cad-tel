@@ -1,7 +1,8 @@
-# Streamlit Cloud reads this directly. Kept aligned with pyproject.toml.
-# `python_requires>=3.11`.
+# Streamlit Cloud reads this directly. Kept aligned with pyproject.toml,
+# except opencv-python-headless is used here (no X11 libs needed in cloud).
+# Local dev (pyproject.toml) can use either headless or full.
 
-opencv-python>=4.10.0
+opencv-python-headless>=4.10.0
 numpy>=1.26,<2.2
 pdf2image>=1.17.0
 pillow>=10.4.0
