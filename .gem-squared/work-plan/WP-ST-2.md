@@ -118,7 +118,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 4. CLI subcommands — list-runs / show-run / refusals / stats | STATUS: IN_PROGRESS
+### 4. CLI subcommands — list-runs / show-run / refusals / stats | STATUS: COMPLETED
 - A: { db_path resolution: env var GEM2_VISION_AUDIT_DB or default ".gem-squared/audit.sqlite" }
 - B: {
     `python -m cad_trust.audit list-runs [--limit N] [--drawing-id X]` prints recent runs as table (run_id, drawing_id, started_at, duration_ms, exit_state),
@@ -139,12 +139,12 @@ WP_Invariants ≜ [
   - `python -m cad_trust.audit refusals` aggregates refusal counts by attempted_type
   - `python -m cad_trust.audit stats` shows tag distribution percentages
   - `pytest tests/test_audit_cli.py` covers all subcommands via subprocess invocation
-- Tags: [building-cli, querying-audit, dispatching-argparse]
-- Result:
-- State:
+- Tags: [building-cli, querying-audit, dispatching-argparse, formatting-tables]
+- Result: src/cad_trust/__main__.py enables `python -m cad_trust ...` invocation. src/cad_trust/audit.py extended with argparse-based CLI replacing U2 stub. Four subcommands: list-runs (--limit N, --drawing-id X; sorted by started_at DESC), show-run <run_id> (full event/refusal/policy/epistemic dump), refusals (--drawing-id X, --attempted-type Y; aggregate counts via SQL JOIN), stats (totals + epistemic distribution per field × tag + top attempted_types). DB path resolution: --db arg > GEM2_VISION_AUDIT_DB env > .gem-squared/audit.sqlite. _print_table() formats stdlib-only aligned text tables. Missing DB → returncode 1 with stderr message. Bad run_id → returncode 1 with "not found". pytest tests/test_audit_cli.py 7/7 PASSED in 10.66s — all tests invoke via subprocess.run with sys.executable so real `python -m cad_trust.audit` entry point is exercised.
+- State: SUCCESS
 - Truth:
 
-### 5. Streamlit "Past Runs" tab | STATUS: PENDING
+### 5. Streamlit "Past Runs" tab | STATUS: IN_PROGRESS
 - A: { existing ui/app.py + audit DB possibly populated from prior runs }
 - B: {
     ui/app.py refactored to use `st.tabs(["Run Engine", "Past Runs"])`,
