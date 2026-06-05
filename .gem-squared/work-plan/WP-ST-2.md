@@ -87,7 +87,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 3. Pipeline + stage instrumentation (backward-compatible) | STATUS: IN_PROGRESS
+### 3. Pipeline + stage instrumentation (backward-compatible) | STATUS: COMPLETED
 - A: { existing pipeline.py + ingest/geometry/ocr/symbols/compose modules from WP-ST-1, AuditContext from U2 }
 - B: {
     pipeline.run signature changed to `run(drawing_path, dpi_target=200, audit_db_path=None)` — backward compatible,
@@ -113,12 +113,12 @@ WP_Invariants ≜ [
   - Audit emission failure (simulated by injecting a closed connection) emits warnings.warn but does NOT abort pipeline
   - `pytest tests/test_pipeline_audit.py` covers all 6 cases
   - **Critical**: full `pytest` suite (53 WP-ST-1 + new audit tests) all green
-- Tags: [instrumenting-pipeline, threading-audit, preserving-backward-compat]
-- Result:
-- State:
+- Tags: [instrumenting-pipeline, threading-audit, preserving-backward-compat, recording-policy-fires, rolling-up-epistemic]
+- Result: pipeline.run signature extended to `run(drawing_path, dpi_target=200, audit_db_path=None)`. When audit_db_path is None AND env var GEM2_VISION_AUDIT_DB unset → identical to v0.1.0 code path (zero overhead). When set → AuditContext opens, threads `audit=ctx` through ingest/geometry/ocr/symbols/compose. Each stage gained an optional `audit: AuditContext | None = None` param (TYPE_CHECKING import to avoid runtime cycle). Each stage emits "starting" event on entry + "complete" event on exit with counts payload (lines/contours/wall_candidates for geometry; doors/windows/spaces/refusal_candidates for symbols; etc.). compose stage emits scale_anchor verdict event, calls record_policy_fire("Measurement_Policy", ...) when scale_anchor.detected=False (with mm_fields_refused count), record_refusal per U7 refusal_candidate (region/attempted_type/why), and 4-tag × 3-field epistemic_count rollup. ingest catches IngestError → emits ERROR event → re-raises (audit observes, doesn't gate). **Backward_Compatibility invariant HELD**: full pytest 79/79 PASSED in 68.73s = 53 WP-ST-1 (regression GREEN) + 8 schema + 9 context + 9 audit-pipeline tests. 9 audit-pipeline tests cover: no-audit identical to v0.1.0, runs row recorded, per-stage starting+complete events, Measurement_Policy fires on no-scale (blank fixture exercises path), refusals_log promotion, epistemic_counts per field, IngestError → FAILURE exit_state + error_msg, shape-equal with/without audit.
+- State: SUCCESS
 - Truth:
 
-### 4. CLI subcommands — list-runs / show-run / refusals / stats | STATUS: PENDING
+### 4. CLI subcommands — list-runs / show-run / refusals / stats | STATUS: IN_PROGRESS
 - A: { db_path resolution: env var GEM2_VISION_AUDIT_DB or default ".gem-squared/audit.sqlite" }
 - B: {
     `python -m cad_trust.audit list-runs [--limit N] [--drawing-id X]` prints recent runs as table (run_id, drawing_id, started_at, duration_ms, exit_state),

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import contextlib
 import json
+import os
 import sqlite3
 import sys
 import time
@@ -217,14 +218,199 @@ def audit_run(db_path: Path | str, drawing_id: str) -> AuditContext:
     return AuditContext(db_path, drawing_id)
 
 
-# ── CLI shell — U4 fills in subcommands ─────────────────────────────────────
+# ── CLI subcommands ─────────────────────────────────────────────────────────
+
+
+def _resolve_db_path(arg: str | None) -> Path:
+    if arg:
+        return Path(arg)
+    env = os.environ.get("GEM2_VISION_AUDIT_DB")
+    if env:
+        return Path(env)
+    return DEFAULT_DB_PATH
+
+
+def _open_for_read(db_path: Path) -> sqlite3.Connection:
+    if not db_path.exists():
+        raise FileNotFoundError(f"audit DB not found: {db_path}")
+    c = sqlite3.connect(str(db_path))
+    c.row_factory = sqlite3.Row
+    return c
+
+
+def _print_table(rows: list[sqlite3.Row], cols: list[str]) -> None:
+    if not rows:
+        print("(no rows)")
+        return
+    widths = {c: max(len(c), max(len(str(r[c] if r[c] is not None else "")) for r in rows)) for c in cols}
+    sep = "  "
+    header = sep.join(c.ljust(widths[c]) for c in cols)
+    print(header)
+    print(sep.join("-" * widths[c] for c in cols))
+    for r in rows:
+        print(sep.join(str(r[c] if r[c] is not None else "").ljust(widths[c]) for c in cols))
+
+
+def cmd_list_runs(args) -> int:
+    db = _resolve_db_path(args.db)
+    conn = _open_for_read(db)
+    try:
+        sql = (
+            "SELECT run_id, drawing_id, started_at, duration_ms, exit_state "
+            "FROM runs WHERE 1=1"
+        )
+        params: list[Any] = []
+        if args.drawing_id:
+            sql += " AND drawing_id = ?"
+            params.append(args.drawing_id)
+        sql += " ORDER BY started_at DESC LIMIT ?"
+        params.append(args.limit)
+        rows = conn.execute(sql, params).fetchall()
+        _print_table(rows, ["run_id", "drawing_id", "started_at", "duration_ms", "exit_state"])
+        return 0
+    finally:
+        conn.close()
+
+
+def cmd_show_run(args) -> int:
+    db = _resolve_db_path(args.db)
+    conn = _open_for_read(db)
+    try:
+        run = conn.execute("SELECT * FROM runs WHERE run_id = ?", (args.run_id,)).fetchone()
+        if run is None:
+            print(f"run_id {args.run_id!r} not found", file=sys.stderr)
+            return 1
+        print(f"=== run_id: {run['run_id']} ===")
+        for k in run.keys():
+            print(f"  {k}: {run[k]}")
+        print("\n--- stage_events ---")
+        events = conn.execute(
+            "SELECT timestamp, stage, level, message, payload_json "
+            "FROM stage_events WHERE run_id = ? ORDER BY event_id",
+            (args.run_id,),
+        ).fetchall()
+        _print_table(events, ["timestamp", "stage", "level", "message"])
+        print("\n--- refusals_log ---")
+        refs = conn.execute(
+            "SELECT attempted_type, why FROM refusals_log WHERE run_id = ?",
+            (args.run_id,),
+        ).fetchall()
+        _print_table(refs, ["attempted_type", "why"])
+        print("\n--- policy_fires ---")
+        pol = conn.execute(
+            "SELECT policy_name, detail_json, timestamp FROM policy_fires WHERE run_id = ?",
+            (args.run_id,),
+        ).fetchall()
+        _print_table(pol, ["timestamp", "policy_name", "detail_json"])
+        print("\n--- epistemic_counts ---")
+        eps = conn.execute(
+            "SELECT stage, field, tag, count FROM epistemic_counts WHERE run_id = ? "
+            "ORDER BY field, tag",
+            (args.run_id,),
+        ).fetchall()
+        _print_table(eps, ["stage", "field", "tag", "count"])
+        return 0
+    finally:
+        conn.close()
+
+
+def cmd_refusals(args) -> int:
+    db = _resolve_db_path(args.db)
+    conn = _open_for_read(db)
+    try:
+        sql_parts = ["SELECT r.attempted_type, COUNT(*) AS cnt, runs.drawing_id "
+                     "FROM refusals_log r JOIN runs ON r.run_id = runs.run_id WHERE 1=1"]
+        params: list[Any] = []
+        if args.drawing_id:
+            sql_parts.append("AND runs.drawing_id = ?")
+            params.append(args.drawing_id)
+        if args.attempted_type:
+            sql_parts.append("AND r.attempted_type = ?")
+            params.append(args.attempted_type)
+        sql_parts.append("GROUP BY r.attempted_type, runs.drawing_id ORDER BY cnt DESC")
+        sql = " ".join(sql_parts)
+        rows = conn.execute(sql, params).fetchall()
+        if not rows:
+            print("(no refusals match)")
+            return 0
+        _print_table(rows, ["attempted_type", "cnt", "drawing_id"])
+        return 0
+    finally:
+        conn.close()
+
+
+def cmd_stats(args) -> int:
+    db = _resolve_db_path(args.db)
+    conn = _open_for_read(db)
+    try:
+        total_runs = conn.execute("SELECT COUNT(*) AS c FROM runs").fetchone()["c"]
+        success_runs = conn.execute(
+            "SELECT COUNT(*) AS c FROM runs WHERE exit_state = 'SUCCESS'"
+        ).fetchone()["c"]
+        total_refusals = conn.execute("SELECT COUNT(*) AS c FROM refusals_log").fetchone()["c"]
+        total_policy_fires = conn.execute(
+            "SELECT COUNT(*) AS c FROM policy_fires"
+        ).fetchone()["c"]
+        print(f"runs:           {total_runs}  (SUCCESS: {success_runs})")
+        print(f"refusals:       {total_refusals}")
+        print(f"policy_fires:   {total_policy_fires}")
+        print("\n--- epistemic distribution (across all runs) ---")
+        dist = conn.execute(
+            "SELECT field, tag, SUM(count) AS total FROM epistemic_counts "
+            "GROUP BY field, tag ORDER BY field, tag"
+        ).fetchall()
+        _print_table(dist, ["field", "tag", "total"])
+        print("\n--- top attempted_types for refusals ---")
+        tops = conn.execute(
+            "SELECT attempted_type, COUNT(*) AS cnt FROM refusals_log "
+            "GROUP BY attempted_type ORDER BY cnt DESC LIMIT 10"
+        ).fetchall()
+        _print_table(tops, ["attempted_type", "cnt"])
+        return 0
+    finally:
+        conn.close()
+
+
+def _build_parser() -> "argparse.ArgumentParser":
+    import argparse
+    p = argparse.ArgumentParser(
+        prog="cad_trust.audit",
+        description="Audit DB query CLI for the CAD Trust Engine",
+    )
+    p.add_argument("--db", help=f"audit DB path (default: env GEM2_VISION_AUDIT_DB or {DEFAULT_DB_PATH})")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    p_list = sub.add_parser("list-runs", help="list recent pipeline runs")
+    p_list.add_argument("--limit", type=int, default=20)
+    p_list.add_argument("--drawing-id", default=None)
+    p_list.set_defaults(func=cmd_list_runs)
+
+    p_show = sub.add_parser("show-run", help="show events / refusals / policy fires for one run")
+    p_show.add_argument("run_id")
+    p_show.set_defaults(func=cmd_show_run)
+
+    p_ref = sub.add_parser("refusals", help="aggregate refusal counts")
+    p_ref.add_argument("--drawing-id", default=None)
+    p_ref.add_argument("--attempted-type", default=None)
+    p_ref.set_defaults(func=cmd_refusals)
+
+    p_stats = sub.add_parser("stats", help="epistemic distribution + refusal rollup across all runs")
+    p_stats.set_defaults(func=cmd_stats)
+
+    return p
 
 
 def main(argv: list[str] | None = None) -> int:
-    """U4 owns the real argparse routing. Provide a stub here so
-    `python -m cad_trust.audit` doesn't 500 between U2 and U4."""
-    print("cad_trust.audit CLI — U2 stub; subcommands land in U4", file=sys.stderr)
-    return 0
+    parser = _build_parser()
+    args = parser.parse_args(argv)
+    try:
+        return args.func(args)
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    except Exception as exc:
+        print(f"error: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
