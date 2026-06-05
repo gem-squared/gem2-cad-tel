@@ -101,7 +101,7 @@ WP_Invariants ≜ [
 - State: SUCCESS (retried=⊤)
 - Truth:
 
-### 3. Execute the crawl — populate data/samples/ with real drawings | STATUS: IN_PROGRESS
+### 3. Execute the crawl — populate data/samples/ with real drawings | STATUS: COMPLETED
 - A: { target_count: 20, categories_to_query: ["Floor plans", "Architectural drawings", "House plans"], out_samples_dir: data/samples/, out_provenance_dir: data/provenance/, audit_log_path: .gem-squared/crawl_summary.json }
 - B: {
     scripts/crawl_corpus.py invoked as `__main__` (CLI) — runs the crawl,
@@ -119,12 +119,12 @@ WP_Invariants ≜ [
   - .gem-squared/crawl_summary.json exists and lists downloaded + refused totals
   - All license_mapped values in provenance are ∈ {CC-BY, CC-BY-SA, CC-BY-NC, public, academic, check-required} (no None / no missing)
   - sha256 in each provenance JSON matches the actual file's hash (smoke-checked on ≥3 files)
-- Tags: [executing-crawl, populating-corpus, recording-summary]
-- Result:
-- State:
+- Tags: [executing-crawl, populating-corpus, recording-summary, surfacing-license-discipline]
+- Result: Live Wikimedia API crawl (Categories: Floor plans, Architectural drawings, House plans; limit 25 per category). **Pool: 50 candidates** total. **Downloaded: 22 real architectural drawings** (8 PNG + 11 JPG + 1 PDF + 2 SVG) — all license ∈ {CC-BY-SA, CC-BY}, provenance JSON per file validates ProvenanceRecord. **Refused: 27 by license** — Wikimedia extmetadata returned raw='pd' (not 'pd-old'), my mapping table requires 'pd-' prefix; honest No_Source_Bluff refusal (would optimistically guess "public" be a discipline violation). **Refused: 1 by too-small** (thumbnail-sized dummy). **Refused: 0 by HTTP 404** (live API + Wikimedia CDN are robust). **Combined corpus: 22 real + 12 synthetic = 34 drawings total**. Mid-execution bug caught + fixed: CrawlSummary.completed_at lacked default value → TypeError on dry-run; added `= None`. .gem-squared/crawl_summary.json records the run with started_at / completed_at / 22 downloaded / 27 refused_by_license / 0 refused_by_404 / 1 refused_by_too_small / per-source counter / refused_details listing each rejected file + reason. **Honest gap surfaced**: JPG (11) + SVG (2) not currently ingestable by WP-ST-1 Ingest_F (PNG/PDF only); U5 may extend ingest to JPG via PIL or surface skip-list.
+- State: SUCCESS
 - Truth:
 
-### 4. Corpus validation tests (extended) + license whitelist enforcement | STATUS: PENDING
+### 4. Corpus validation tests (extended) + license whitelist enforcement | STATUS: IN_PROGRESS
 - A: { existing tests/test_corpus.py + new data/samples/ contents (synthetic + real) + crawl_summary.json }
 - B: {
     tests/test_corpus.py acceptance criteria already cover: count in [10, ≤many], provenance per sample, sha256 match, license != None, domain coverage — these MUST continue passing on the expanded corpus,
