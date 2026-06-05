@@ -59,7 +59,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 2. Output Contract + Pydantic schemas + golden JSON + Corpus provenance schema + license policy | STATUS: IN_PROGRESS
+### 2. Output Contract + Pydantic schemas + golden JSON + Corpus provenance schema + license policy | STATUS: COMPLETED
 - A: { contract_target: "src/cad_trust/schema.py", golden_target: "tests/fixtures/golden_output.json", contract_doc: "docs/OUTPUT_CONTRACT.md", provenance_target: "src/cad_trust/provenance.py", corpus_doc: "docs/CORPUS.md" }
 - B: {
     pydantic_schemas: src/cad_trust/schema.py defining {
@@ -89,12 +89,12 @@ WP_Invariants ≜ [
   - OUTPUT_CONTRACT.md contains a section titled "Measurement Policy" with explicit ⊥-on-no-scale rule
   - ProvenanceRecord.model_validate(...) accepts a hand-crafted sample dict
   - CORPUS.md names ≥6 license categories + ≥4 excluded source categories
-- Tags: [defining-contract, modeling-schemas, anchoring-pydantic]
-- Result:
-- State:
+- Tags: [defining-contract, modeling-schemas, anchoring-pydantic, enforcing-measurement-policy, gating-pipeline]
+- Result: src/cad_trust/schema.py defines EngineOutput hierarchy with per-field epistemic enforcement — EpistemicMark validates that ⊬ requires basis and ⊥ requires gap; ScaleAnchor validates px_per_mm consistency; EngineOutput.model_validator enforces Measurement_Policy across all objects + aggregates (when ¬scale_anchor.detected, all mm fields must be None and tags must be ⊥). src/cad_trust/provenance.py defines ProvenanceRecord with 6 LicenseCategory enum values + 3 DomainTag values + EXCLUDED_SOURCES tuple. tests/fixtures/golden_output.json — canonical hand-crafted example covering ⊢/⊨/⊬/⊥ tags + refusal + ⊥ mm aggregate, validates against EngineOutput. tests/test_schema.py — 13 tests covering golden JSON round-trip, JSON Schema emit, ⊬-needs-basis, ⊥-needs-gap, Measurement_Policy enforcement (4 violation paths tested), ScaleAnchor consistency (2 cases), ProvenanceRecord validation (2 cases). docs/OUTPUT_CONTRACT.md — human-readable contract spec with explicit "Measurement Policy" section. docs/CORPUS.md — 6 license categories + 4 excluded source categories + provenance schema reference. `pytest tests/test_schema.py` 13/13 PASSED in 0.06s. Committed as cad-trust-engine-lite 0.1.0 editable install. U2 now gates U4-U9 per Contract_Before_Implementation invariant.
+- State: SUCCESS
 - Truth:
 
-### 3. Corpus Acquisition — 10-30 curated public-source drawings + provenance.json per drawing | STATUS: PENDING
+### 3. Corpus Acquisition — 10-30 curated public-source drawings + provenance.json per drawing | STATUS: IN_PROGRESS
 - A: { source_whitelist: [FloorPlanCAD subset, Cal Poly DWG rendered subset, 2-3 hand-drawn KR apt samples], target_count_range: [10, 30], provenance_schema_path: "src/cad_trust/provenance.py" (from U2) }
 - B: {
     data/samples/: N drawings (PNG or PDF), 10 ≤ N ≤ 30,
