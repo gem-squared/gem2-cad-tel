@@ -191,7 +191,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 8. Compose_F + Aggregate_F — per-field EEF + refusals + scale-anchor policy + aggregates | STATUS: IN_PROGRESS
+### 8. Compose_F + Aggregate_F — per-field EEF + refusals + scale-anchor policy + aggregates | STATUS: COMPLETED
 - A: { lines, contours, wall_candidates (U5), texts (U6), doors, windows, spaces, refusal_candidates (U7) }
 - B: full EngineOutput per U2 schema = {
     drawing_id: str,
@@ -213,12 +213,12 @@ WP_Invariants ≜ [
   - All U7.refusal_candidates appear in B.refusals
   - aggregates.warning is non-empty when ≥1 ⊬/⊥ object contributed to the count
   - Golden JSON from U2 round-trips through this stage's output schema
-- Tags: [fusing-evidence, tagging-epistemic, aggregating-objects]
-- Result:
-- State:
+- Tags: [fusing-evidence, tagging-epistemic, aggregating-objects, enforcing-measurement-policy, propagating-taint]
+- Result: src/cad_trust/compose.py implements compose(drawing_id, canonical_image, geometry, ocr, symbols) → EngineOutput (full U2 schema). **Scale anchor extraction**: candidate px_per_mm = wall_length_px / dimension_value_mm for every (dim, wall) pair; cluster of ≥2 ratios within ±5% → detected, else ⊥. **Per-field epistemic tagging**: walls get type ⊢ (parallel-pair is direct evidence) + geom ⊨ (paired endpoints inferred); doors get type ⊨ (arc + wall_proximity) + geom ⊨ (bbox encloses arc); windows get type ⊬ (basis: "double-line is consistent with both window and balcony_sash; v0.1 has no semantic verifier — VLM_Verify lands in v0.2") + geom ⊨; spaces get type ⊢ when room_label enclosed else ⊬ (basis: "could be furniture outline"); dimension_text gets type ⊢ + measurement ⊥ (text value is NOT its own measurement_mm). **Measurement_Policy enforced** via Pydantic model_validator at EngineOutput level: ¬scale_anchor.detected → all objects measurement_mm = None + tag ⊥ + aggregate measured_wall_length_mm.value = None + tag ⊥. **Refusal_Over_Bluff promotion**: U7 refusal_candidates → top-level EngineOutput.refusals (with `[attempted_type] {why_refused}` prefix). **Aggregates**: count + warning text when ⊬/⊥ contributors taint the value (e.g., 1 of 1 window candidates ⊬-tagged → "1 of 1 window contributors carry ⊬/⊥ type_epistemic"); aggregate epistemic.tag reflects worst contributor. pytest tests/test_compose.py 7/7 PASSED in 21.32s: schema round-trip, every object has 3 marks, no-scale → all measurement ⊥, no-scale → mm aggregate ⊥, refusals promoted from U7, aggregate.warning fires on ⊬ contributors, U2 golden JSON regression intact.
+- State: SUCCESS
 - Truth:
 
-### 9. Review_UI (Streamlit) + README + 5 demo scenarios (1 explicitly Korean apt 적산) + Korean pitch | STATUS: PENDING
+### 9. Review_UI (Streamlit) + README + 5 demo scenarios (1 explicitly Korean apt 적산) + Korean pitch | STATUS: IN_PROGRESS
 - A: { full EngineOutput (from U8), 10-30 corpus drawings (from U3) }
 - B: {
     ui/app.py: Streamlit app — file picker → run pipeline → overlay PNG with bbox/polyline/polygon colored by type + refusal heatmap layer + object table + per-object evidence panel + JSON download button,
