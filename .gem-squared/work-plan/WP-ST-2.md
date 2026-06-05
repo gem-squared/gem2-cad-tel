@@ -144,7 +144,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 5. Streamlit "Past Runs" tab | STATUS: IN_PROGRESS
+### 5. Streamlit "Past Runs" tab | STATUS: COMPLETED
 - A: { existing ui/app.py + audit DB possibly populated from prior runs }
 - B: {
     ui/app.py refactored to use `st.tabs(["Run Engine", "Past Runs"])`,
@@ -165,12 +165,12 @@ WP_Invariants ≜ [
   - Selecting a run displays its stage_events + refusals
   - Streamlit smoke (process launches + HTTP 200) still passes
   - Aggregate refusal chart renders without error when ≥1 refusal exists
-- Tags: [building-ui-tab, querying-past-runs, visualizing-refusal-patterns]
-- Result:
-- State:
+- Tags: [building-ui-tab, querying-past-runs, visualizing-refusal-patterns, defaulting-audit-on]
+- Result: ui/app.py refactored to st.tabs(["Run Engine", "Past Runs (Audit)"]). Sidebar shows resolved audit DB path + env-var hint. Run Engine tab now defaults audit-on: resolves DB via env GEM2_VISION_AUDIT_DB > .gem-squared/audit.sqlite; init_audit_db before each run; pipeline.run called with audit_db_path. Past Runs tab: 4 metric cards (total runs / SUCCESS·FAILURE / refusals / policy_fires), aggregate refusal pattern bar chart by attempted_type when ≥1 refusal exists, Recent Runs selectbox (50 latest) with drill-into expander showing run row JSON + stage_events timeline dataframe + refusals as warning list + policy_fires as info bars + epistemic_counts dataframe. Graceful empty-DB info message (no crash). Streamlit smoke verified: launches + serves HTTP 200. pytest tests/test_audit_streamlit_queries.py 5/5 PASSED in 21.57s — exercises every SQL the tab uses (empty DB metrics, populated runs query, refusal aggregation, drill-into 4-section query, ui/app.py syntactic validity via compile()).
+- State: SUCCESS
 - Truth:
 
-### 6. Tests + docs + v0.1.1 git tag | STATUS: PENDING
+### 6. Tests + docs + v0.1.1 git tag | STATUS: IN_PROGRESS
 - A: { U1-U5 complete; all new code committed; baseline 53 WP-ST-1 tests + new audit tests in tests/ }
 - B: {
     final `pytest` run: ALL tests green (WP-ST-1's 53 + WP-ST-2's new audit tests),

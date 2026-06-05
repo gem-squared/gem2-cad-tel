@@ -39,6 +39,10 @@ Thumbs.db
 
 # gem2 local state (not tracked)
 .gem-squared/work-plan/*.tmp
+.gem-squared/audit.sqlite
+.gem-squared/audit.sqlite-journal
+.gem-squared/audit.sqlite-wal
+.gem-squared/audit.sqlite-shm
 
 # Python
 __pycache__/

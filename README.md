@@ -31,12 +31,32 @@ streamlit run ui/app.py                      # localhost demo
 | `docs/README.md`                   | Engineering thesis (start here)                  |
 | `docs/OUTPUT_CONTRACT.md`          | Formal contract spec + Measurement Policy        |
 | `docs/CORPUS.md`                   | Corpus license posture + provenance schema       |
+| `docs/AUDIT.md`                    | Audit subsystem (Refusal Over Bluff, remembered) |
 | `docs/DEMO_SCENARIOS.md`           | 5 walkthrough scenarios (incl. KR refusal demo)  |
 | `docs/POBICON_PITCH.ko.md`         | Korean application pitch                         |
 
+## Audit subsystem (v0.1.1)
+
+Every pipeline run can log to a SQLite audit DB — stage events, refusals,
+Measurement_Policy fires, epistemic-tag distributions, errors. The audit trail
+extends Refusal Over Bluff across time:
+
+```bash
+# Default audit DB at .gem-squared/audit.sqlite
+streamlit run ui/app.py    # the Past Runs tab queries the DB
+
+# CLI
+python -m cad_trust.audit list-runs
+python -m cad_trust.audit show-run <run_id>
+python -m cad_trust.audit refusals --attempted-type door
+python -m cad_trust.audit stats
+```
+
+See `docs/AUDIT.md` for schema, invariants, and example queries.
+
 ## Status
 
-v0.1.0 — released 2026-06-05. Built end-to-end in one autonomous session
-(WP-ST-1, 9 unit-works, 53 tests, 9 commits).
+- **v0.1.0** — 2026-06-05: CAD Trust Engine Lite, 9 units, 53 tests
+- **v0.1.1** — 2026-06-05: Audit subsystem, +6 units, +38 tests (91 total)
 
 See `docs/README.md` for the engineering thesis and v0.2 / v0.3 roadmap.
