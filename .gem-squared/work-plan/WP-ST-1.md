@@ -135,7 +135,7 @@ WP_Invariants ≜ [
 - State: SUCCESS
 - Truth:
 
-### 5. Geometry_F — OpenCV line/contour extraction + wall candidates | STATUS: IN_PROGRESS
+### 5. Geometry_F — OpenCV line/contour extraction + wall candidates | STATUS: COMPLETED
 - A: canonical_image (from U4)
 - B: { lines: Seq[{p1, p2, length_px, thickness_px, evidence}], contours: Seq[{points, area_px, closed: 𝔹}], wall_candidates: Seq[{polyline, thickness_px, evidence: {source: "opencv_line", signal: "parallel thick line pair, gap=N px"}}] }
 - P: canonical_image is grayscale-convertible
@@ -146,12 +146,12 @@ WP_Invariants ≜ [
   - Empty result returns typed `GeometryResult` with empty lists + diagnostic field, NEVER silent None
   - Every wall_candidate carries non-empty evidence
   - `pytest tests/test_geometry.py` covers ≥1 known-good fixture
-- Tags: [extracting-geometry, detecting-walls, fusing-lines]
-- Result:
-- State:
+- Tags: [extracting-geometry, detecting-walls, fusing-lines, pairing-parallel-lines]
+- Result: src/cad_trust/geometry.py implements extract_geometry(canonical_image) → GeometryResult dataclass {lines, contours, wall_candidates, diagnostic}. Pipeline: cv2.cvtColor RGB→GRAY → cv2.Canny (50,150,3) → cv2.HoughLinesP (rho=1, theta=π/180, threshold=80, minLineLength=60, maxLineGap=8) → parallel-pair pairing (Δangle ≤ 3°, perpendicular gap ∈ [3,18]px, projected overlap ≥ 55%). Each wall_candidate carries evidence with source="opencv_line_pair" and a signal string naming the gap + overlap %. Contours via cv2.findContours (THRESH_BINARY_INV @ 200 + RETR_EXTERNAL + CHAIN_APPROX_SIMPLE + min area 200px²). Empty input never returns silent None — typed GeometryResult with diagnostic field. pytest tests/test_geometry.py 5/5 PASSED in 0.24s: blank input → typed empty result, None/empty array → "empty input image" diagnostic, known-good fixture produces lines AND walls, every wall_candidate has evidence, ≥80% corpus calibration smoke PASSED (all 12 synthetic floor plans produced ≥1 wall_candidate).
+- State: SUCCESS
 - Truth:
 
-### 6. OCR_F — PaddleOCR ko+en + dimension/label classification | STATUS: PENDING
+### 6. OCR_F — PaddleOCR ko+en + dimension/label classification | STATUS: IN_PROGRESS
 - A: canonical_image (from U4)
 - B: { texts: Seq[{text, bbox, char_conf, classification: {dimension_text, room_label, other}, evidence: {source: "paddleocr", raw_score}}] }
 - P: PaddleOCR ko+en models downloaded (validated in U1 smoke); canonical_image dpi ≥ 150
