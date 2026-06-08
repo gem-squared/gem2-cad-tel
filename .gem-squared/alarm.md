@@ -1,11 +1,11 @@
 # ALARM — gem2-vision
-## Last checked: 2026-06-06T01:50:00Z
+## Last checked: 2026-06-08T00:13:52Z
 
 ## Current Status
 **Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3, v0.1.4
 **Live demo:** https://cad-tel.gemsquared.ai
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 5 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 1 | IN_PROGRESS: 0 | COMPLETED: 5 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
 > **WP-ST-5 COMPLETED|SUCCESS 2026-06-06** — Vultr VPS deployment v0.1.4.
 > 6 unit-works delivered autonomously. Public URL live on cad-tel.gemsquared.ai
@@ -26,7 +26,10 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 5 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-5 | v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy) | 00d8cde5 | 6 | v0.1.4; 145 tests; 2 mid-flight fixes; 5 commits; **live at https://cad-tel.gemsquared.ai** |
 
 ### PENDING (not started)
-(none)
+
+| WP | Title | task_id | Units | Notes |
+|----|-------|---------|-------|-------|
+| WP-ST-6 | Drawing dropdown reorder — wm_* before synth_* + ship live | d88cc110 | 5 | autonomous; ends on live VPS verification |
 
 ### DEFERRED
 (none)

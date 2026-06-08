@@ -52,6 +52,18 @@ def _resolve_audit_db() -> Path:
     return Path(env) if env else DEFAULT_AUDIT_DB
 
 
+def _sort_samples_for_dropdown(paths: list[Path]) -> list[Path]:
+    """Order: wm_* first, synth_* second, others last; alphabetical within each group."""
+    def rank(p: Path) -> tuple[int, str]:
+        name = p.name
+        if name.startswith("wm_"):
+            return (0, name)
+        if name.startswith("synth_"):
+            return (1, name)
+        return (2, name)
+    return sorted(paths, key=rank)
+
+
 # ── Preview helpers (WP-ST-4 U3) ────────────────────────────────────────────
 
 
@@ -187,12 +199,12 @@ tab_run, tab_past = st.tabs(["Run Engine", "Past Runs (Audit)"])
 with tab_run:
     col_pick, col_preview = st.columns([2, 3])
     with col_pick:
-        samples = (
-            sorted(SAMPLES_DIR.glob("*.png"))
-            + sorted(SAMPLES_DIR.glob("*.pdf"))
-            + sorted(SAMPLES_DIR.glob("*.jpg"))
-            + sorted(SAMPLES_DIR.glob("*.jpeg"))
-            + sorted(SAMPLES_DIR.glob("*.svg"))
+        samples = _sort_samples_for_dropdown(
+            list(SAMPLES_DIR.glob("*.png"))
+            + list(SAMPLES_DIR.glob("*.pdf"))
+            + list(SAMPLES_DIR.glob("*.jpg"))
+            + list(SAMPLES_DIR.glob("*.jpeg"))
+            + list(SAMPLES_DIR.glob("*.svg"))
         )
         sample_options = ["(upload your own)"] + [s.name for s in samples]
         choice = st.selectbox("Drawing", sample_options, index=1 if samples else 0)

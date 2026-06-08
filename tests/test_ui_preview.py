@@ -164,6 +164,49 @@ def test_preview_is_read_only_invariant() -> None:
     )
 
 
+# ── WP-ST-6 U2: Drawing dropdown ordering — wm_* first, synth_* second ──────
+
+
+def test_sort_samples_wm_before_synth(helpers) -> None:
+    """Dropdown_Ordering invariant: _sort_samples_for_dropdown puts wm_* first,
+    synth_* second, others last; alphabetical within each group."""
+    paths = [
+        Path("synth_apt_kr_balcony_03.png"),
+        Path("wm_zebra.png"),
+        Path("wm_alpha.png"),
+        Path("synth_apt_kr_balcony_01.png"),
+        Path("other_drawing.png"),
+    ]
+    out = [p.name for p in helpers._sort_samples_for_dropdown(paths)]
+    assert out == [
+        "wm_alpha.png",
+        "wm_zebra.png",
+        "synth_apt_kr_balcony_01.png",
+        "synth_apt_kr_balcony_03.png",
+        "other_drawing.png",
+    ], f"unexpected ordering: {out}"
+
+
+def test_sort_samples_real_corpus_wm_indices_precede_synth(helpers) -> None:
+    """Live-corpus check: across data/samples/, every wm_* index < every synth_* index."""
+    actual = (
+        list(SAMPLES.glob("*.png"))
+        + list(SAMPLES.glob("*.pdf"))
+        + list(SAMPLES.glob("*.jpg"))
+        + list(SAMPLES.glob("*.jpeg"))
+        + list(SAMPLES.glob("*.svg"))
+    )
+    sorted_names = [p.name for p in helpers._sort_samples_for_dropdown(actual)]
+    wm_idx = [i for i, n in enumerate(sorted_names) if n.startswith("wm_")]
+    synth_idx = [i for i, n in enumerate(sorted_names) if n.startswith("synth_")]
+    if not wm_idx or not synth_idx:
+        pytest.skip("corpus lacks either wm_* or synth_* — ordering test trivially holds")
+    assert max(wm_idx) < min(synth_idx), (
+        f"wm_* must all precede synth_*. max(wm_idx)={max(wm_idx)} "
+        f"min(synth_idx)={min(synth_idx)}; sample order head={sorted_names[:5]}"
+    )
+
+
 def test_ui_app_imports_cleanly() -> None:
     """Smoke: the entire ui/app.py compiles to bytecode."""
     src = (ROOT / "ui" / "app.py").read_text()
