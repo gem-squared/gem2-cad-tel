@@ -1,6 +1,6 @@
 # CAD Trust Engine Lite — Engineering Thesis
 
-**Version:** 0.1.0 | **Project:** gem2-vision | **Target audience:** 포비콘 (Korean ConTech, automated 적산)
+**Version:** 0.1.0 | **Project:** gem2-vision | **Target audience:** Korean ConTech 적산 (automated quantity takeoff) — portfolio thesis
 
 ---
 
@@ -121,4 +121,4 @@ streamlit run ui/app.py                      # localhost demo
 
 ---
 
-*See also: `docs/OUTPUT_CONTRACT.md` (the formal contract), `docs/CORPUS.md` (corpus policy), `docs/DEMO_SCENARIOS.md` (5 walkthroughs), `docs/POBICON_PITCH.ko.md` (Korean application pitch).*
+*See also: `docs/OUTPUT_CONTRACT.md` (the formal contract), `docs/CORPUS.md` (corpus policy), `docs/DEMO_SCENARIOS.md` (5 walkthroughs), `docs/DEPLOY.md` (VPS deploy guide).*

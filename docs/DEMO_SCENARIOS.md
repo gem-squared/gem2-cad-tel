@@ -69,7 +69,7 @@ Five walkthroughs covering the engine's trust surface. The first three are routi
 
 The engine *successfully* identifies walls, doors, the balcony sash. It *refuses* to convert the wall lengths into millimeters because the scale-anchor signal is insufficient. **A wrong millimeter conversion is worse than no conversion** — the cost system can route a refusal to a human reviewer; it cannot detect a confidently-wrong number until the construction phase.
 
-This is the single scenario that should determine 포비콘's read: *can our auditability posture survive contact with production?*
+This is the single scenario the portfolio is built around: *can our auditability posture survive contact with production?*
 
 ---
 

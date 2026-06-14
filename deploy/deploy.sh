@@ -207,6 +207,6 @@ cat >&2 <<EOF
   Audit DB:    /opt/cad-tel/data/audit.sqlite (persisted volume on VPS)
   Logs:        ssh ${SSH_TARGET} 'docker logs cad-trust-streamlit -f'
 
-  Next:        share $PUBLIC_URL with the 포비콘 application
+  Next:        share $PUBLIC_URL — portfolio live demo URL
 
 EOF

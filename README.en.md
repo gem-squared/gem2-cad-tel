@@ -4,7 +4,7 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.4** · MVP for [포비콘](https://www.pobicon.com) application · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
+**v0.1.5** · Portfolio · Auditable CAD floor-plan recognition for Korean ConTech 적산 · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
 
 🟢 **Live demo: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — click through directly in your browser. First OCR call may be slow (~1-2 min) while PaddleOCR downloads models on cold start.
 
@@ -19,7 +19,100 @@ PNG/PDF/JPG architectural floor plan → **per-field EEF-tagged JSON** + Streaml
 
 This is not "another OpenCV pipeline." It's a small, working **trust engine** for CAD drawing recognition under cost risk. The wedge is not detection accuracy — it's **auditable measurement that knows what it doesn't know**.
 
-Built end-to-end in 4 autonomous WP cycles (26 commits, 4 tagged releases, 148 tests, 50-drawing corpus). Every detection carries three orthogonal epistemic claims (type / geometry / measurement), explicit refusal regions for uncommittable areas, and a full audit trail of every run / refusal / policy fire / epistemic distribution.
+Built end-to-end in 5 autonomous WP cycles (30+ commits, 5 tagged releases, 148 tests, 50-drawing corpus, live VPS deploy). Every detection carries three orthogonal epistemic claims (type / geometry / measurement), explicit refusal regions for uncommittable areas, and a full audit trail of every run / refusal / policy fire / epistemic distribution.
+
+---
+
+## 🧱 Tech stack — what was used, and why for this domain
+
+| Layer | Choice | Why this choice for this domain |
+|-------|--------|------|
+| Language | **Python 3.11+** | Shortest path combining CV + OCR + UI. PEP 585/604 type hints consistently (`list[T]` / `T \| None`). |
+| Schema | **Pydantic v2** | `model_validator` enforces Measurement_Policy at the contract boundary — an invalid `EngineOutput` cannot be constructed. |
+| Classical CV | **OpenCV** (`opencv-python-headless`) | Canny + HoughLinesP + parallel-pair fusion + HoughCircles cover rule-based detection in v0.1.x. Headless build runs in containers / Streamlit Cloud / VPS. |
+| OCR | **PaddleOCR (ko + en)** | Reliable on both Korean room labels and Latin dimension text — single model covers both. |
+| PDF | **`pdf2image` + Poppler** | Stable page rasterization; multi-page PDFs warn explicitly and ingest page 0. |
+| Image I/O | **Pillow** | Already a PaddleOCR dep; covers PNG/JPG/PDF preview. |
+| Review UI | **Streamlit 1.58** | Fast iteration + native caching. Run Engine / Past Runs (Audit) split into two tabs. |
+| Audit DB | **`sqlite3`** (stdlib) | Zero new deps. `PRAGMA user_version` gates schema migrations. |
+| CLI | **`argparse`** (stdlib) | `python -m cad_trust.audit list-runs / show-run / refusals / stats` — query the audit DB without writing SQL. |
+| Tests | **`pytest`** | 148 tests; fixtures + parametrize + AST-based invariant checks. 145 fast + 3 corpus-wide smoke. |
+| Corpus crawl | **`urllib.request`** (stdlib) | Zero new deps. Polite UA, 0.5s rate-limit, sha256 dedup, license-mapping refusal. |
+| Container | **Docker + docker-compose** | Single-host deploy. PaddleOCR/OpenCV system deps (`libgl1`, `libglib2.0-0`) sealed in the image. |
+| Reverse proxy | **Caddy 2** | Auto-TLS via Let's Encrypt when DOMAIN set, plain HTTP fallback otherwise — both modes validated. |
+| Deploy host | **Vultr VPS** (Debian/Ubuntu, $6/mo) | 1GB RAM + 2GB swap proven to run PaddleOCR + Streamlit + audit. Live at [`cad-tel.gemsquared.ai`](https://cad-tel.gemsquared.ai). |
+| Security · LLM key | **BYO (Bring-Your-Own)** | No LLM API key in server-side env. The visitor pastes into the UI sidebar; key lives only in `st.session_state`; gone when the tab closes. v0.2 VLM_Verify activates only through this path. |
+
+**Deliberately not used** (rationale in [`docs/README.md`](docs/README.md)):
+- ❌ **YOLO / RT-DETR fine-tune** — no labeled corpus yet (v0.3 territory).
+- ❌ **VLM as primary detector** — would handle 20,000+ raw HoughP candidates per drawing inefficiently. Expert CV cross-checking + page-type guard come first (v0.2). VLM enters only as a *re-checker* on `⊬`-tagged crops.
+- ❌ **DWG native ingest** — needs ODA / LibreDWG dep decision (v0.3 territory).
+- ❌ **Extra deps for audit** — stdlib `sqlite3` keeps the subsystem zero-cost to install.
+
+---
+
+## 🛠 How to build — three paths
+
+### Path 1 · Local dev (fastest entry)
+
+```bash
+# 1. Clone
+git clone https://github.com/gem-squared/gem2-cad-tel.git gem2-vision
+cd gem2-vision
+
+# 2. venv + dev deps (uv preferred — plain pip also fine)
+uv venv --python 3.12 .venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
+# (no uv?)  python3.12 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
+
+# 3. Generate the synthetic corpus baseline (12 drawings)
+.venv/bin/python scripts/build_corpus.py
+
+# 4. (Optional) extend the corpus from Wikimedia Commons (~22 more PNGs/JPGs/PDFs)
+.venv/bin/python scripts/crawl_corpus.py --target 25
+
+# 5. Full fast test suite (~97s; 145 tests; skips the 10-min corpus-wide smoke)
+.venv/bin/python -m pytest --ignore=tests/test_corpus_pipeline_smoke.py
+
+# 6. Launch the demo UI (http://localhost:8501)
+.venv/bin/python -m streamlit run ui/app.py
+```
+
+Requirements: Python 3.11+, ~2GB RAM, Poppler (called by `pdf2image`) — `brew install poppler` / `apt install poppler-utils`.
+
+### Path 2 · Docker (single compose-up build)
+
+```bash
+cd deploy
+docker compose up --build
+# → http://localhost:8501
+```
+
+`deploy/docker-compose.yml` brings up the Streamlit container + Caddy reverse proxy together. The `audit_data` named volume survives `down`/`up`.
+
+The image bundles: Python 3.12-slim + paddleocr + opencv-headless + system deps (`libgl1`, `libglib2.0-0`) + this repo's source + the 50-drawing corpus.
+
+### Path 3 · VPS live deploy (Vultr / Debian / Ubuntu)
+
+The 4-command flow that stood up `cad-tel.gemsquared.ai`:
+
+```bash
+# 1. Register your SSH key on the VPS (one-shot)
+PUBKEY=$(cat ~/.ssh/id_ed25519_aio_deploy.pub)
+ssh user@your.vps.ip "echo '$PUBKEY' >> ~/.ssh/authorized_keys"
+
+# 2. Bootstrap the host (idempotent — Docker + ufw + 2GB swap + /opt/cad-tel/)
+ssh -i ~/.ssh/id_ed25519_aio_deploy user@your.vps.ip 'bash -s' < deploy/bootstrap.sh
+
+# 3. Deploy (no domain = IP only; with domain = Let's Encrypt auto-TLS)
+./deploy/deploy.sh user@your.vps.ip                              # IP access
+./deploy/deploy.sh user@your.vps.ip --domain cad-tel.example.com # Domain + TLS
+
+# 4. Auto-verify: confirms HTTP 200 + body contains "CAD Trust Engine", then prints the URL
+```
+
+Full prerequisites, rollback flow, and troubleshooting in [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ---
 
@@ -35,9 +128,7 @@ A misrecognized wall means a wrong material order — millions of KRW. The cost 
 - *what it refused to commit on* (with the reason),
 - and the *historical pattern* of those refusals across the whole corpus.
 
-That is the auditability story 포비콘 needs to plug recognition results into a 산출내역서 system.
-
-For a Korean application pitch, see [`docs/POBICON_PITCH.ko.md`](docs/POBICON_PITCH.ko.md).
+That auditability surface is what makes a recognition pipeline safe to wire into a 산출내역서 system.
 
 ---
 
@@ -106,7 +197,7 @@ Same posture applied to corpus building. Every sample carries a `ProvenanceRecor
 
 ---
 
-## What's built (v0.1.3 — 4 tagged releases)
+## What's built (v0.1.5 — 6 tagged releases)
 
 | Release | Lands | Highlights |
 |--------:|------:|------------|
@@ -114,13 +205,15 @@ Same posture applied to corpus building. Every sample carries a `ProvenanceRecor
 | **v0.1.1** | 2026-06-05 | Audit subsystem: SQLite schema + AuditContext + 5-stage instrumentation + CLI (`list-runs`/`show-run`/`refusals`/`stats`) + Streamlit "Past Runs" tab + 91 tests |
 | **v0.1.2** | 2026-06-05 | Wikimedia Commons crawl: +22 real drawings (License_Discipline refused 27 unmappable) + JPG ingest support + 130 tests + 100% pipeline success on 32 ingestable real-world drawings |
 | **v0.1.3** | 2026-06-06 | License mapping fix (exact-vs-prefix matcher) unlocked +16 PD drawings → 50 total + Streamlit preview pane right of the Drawing dropdown + 148 tests |
+| **v0.1.4** | 2026-06-06 | Vultr VPS live deploy (Docker + host Caddy integration) → public URL `cad-tel.gemsquared.ai` |
+| **v0.1.5** | 2026-06-14 | Portfolio reframing — README tech-stack/build emphasis + BYO LLM-key pattern (UI sidebar scaffold + `docs/DEPLOY.md` secrets-section rewrite) |
 
 ### Concrete numbers
 
 - **5-stage pipeline**: Ingest → Geometry → OCR → Symbol → Compose+Aggregate
 - **148 tests** across 9 modules (145 fast + 3 corpus-wide smoke)
 - **50-drawing corpus** (12 synthetic + 38 Wikimedia, all with provenance + sha256)
-- **27 git commits** on `main`, **4 tagged releases**
+- **30+ git commits** on `main`, **5 tagged releases**
 - **6 WP-level invariants** enforced across the codebase
 - **100% pipeline success** on 32 ingestable real drawings; object counts 11–20,267; refusal counts 0–931 per drawing
 
@@ -157,32 +250,7 @@ The output contract ([`src/cad_trust/schema.py`](src/cad_trust/schema.py), [`doc
 
 ---
 
-## Tech stack
-
-| Layer | Choice | Why |
-|-------|--------|-----|
-| Language | Python 3.11+ | Mature ecosystem, simplest path to combined CV + OCR + UI |
-| Schema | Pydantic v2 | `model_validator` enforces Measurement_Policy at the contract boundary |
-| Classical CV | OpenCV (`opencv-python`) | Canny + HoughLinesP + HoughCircles + contour analysis cover the rule-based detection in v0.1.x |
-| OCR | PaddleOCR (ko + en) | Reliable on both Korean room labels and Latin dimension text |
-| PDF | `pdf2image` + Poppler | Stable page rasterization |
-| Image I/O | Pillow | Already a PaddleOCR dep; covers PNG/JPG/PDF preview |
-| UI | Streamlit 1.58 | Fast iteration; tabs for Run Engine + Past Runs; native caching |
-| Audit DB | `sqlite3` (stdlib) | Zero new deps; PRAGMA user_version gates migrations |
-| CLI | `argparse` (stdlib) | `python -m cad_trust.audit list-runs / show-run / refusals / stats` |
-| Tests | `pytest` | 148 tests; fixtures + parametrize; AST-based invariant checks |
-| Corpus crawl | `urllib.request` (stdlib) | Polite user-agent, 0.5s rate-limit, sha256 dedup, license-mapping refusal |
-| Type hints | PEP 585 + 604 | `list[T]` / `T | None` throughout; no `typing.List` legacy |
-
-**Deliberately not used** (and the reasoning is in `docs/README.md`):
-- **No YOLO/RT-DETR fine-tune** in v0.1.x — would require a labeled corpus we don't have yet (v0.3 territory)
-- **No VLM** in v0.1.x — would handle 20,000+ raw HoughP candidates per drawing inefficiently; expert CV cross-checking + page-type guard come first (planned WP-ST-5)
-- **No DWG native ingest** in v0.1.x — needs ODA/LibreDWG, separate dep decision (v0.3 territory)
-- **No new external deps for audit** — stdlib `sqlite3` keeps the audit subsystem zero-cost to install
-
----
-
-## Engineering posture (the skills we exercised)
+## Engineering posture (the skills exercised)
 
 Concrete engineering practices visible in the commit history and tests:
 
@@ -196,45 +264,6 @@ Concrete engineering practices visible in the commit history and tests:
 
 ---
 
-## Quickstart
-
-```bash
-# Clone + venv
-git clone https://github.com/gem-squared/gem2-cad-tel.git gem2-vision
-cd gem2-vision
-uv venv --python 3.12 .venv
-source .venv/bin/activate
-uv pip install -e ".[dev]"
-
-# Generate the synthetic corpus baseline (12 drawings)
-.venv/bin/python scripts/build_corpus.py
-
-# (Optional) extend the corpus from Wikimedia Commons (~22 more PNGs/JPGs/PDFs)
-.venv/bin/python scripts/crawl_corpus.py --target 25
-
-# Full fast test suite (~97s; 145 tests; skips the 10-min corpus-wide smoke)
-.venv/bin/python -m pytest --ignore=tests/test_corpus_pipeline_smoke.py
-
-# Launch the demo UI (http://localhost:8501)
-.venv/bin/python -m streamlit run ui/app.py
-```
-
-Once the Streamlit UI is running:
-
-- **Run Engine tab** — pick a drawing → see preview immediately → click Run Engine → see overlay + per-field epistemic badges + JSON download
-- **Past Runs (Audit) tab** — drill into recorded runs, view aggregate refusal patterns by `attempted_type` across the corpus
-
-For CLI audit queries:
-
-```bash
-.venv/bin/python -m cad_trust.audit list-runs
-.venv/bin/python -m cad_trust.audit show-run <run_id>
-.venv/bin/python -m cad_trust.audit refusals --attempted-type door
-.venv/bin/python -m cad_trust.audit stats
-```
-
----
-
 ## Documentation map
 
 | File | Purpose |
@@ -244,8 +273,8 @@ For CLI audit queries:
 | [`docs/CORPUS.md`](docs/CORPUS.md) | Corpus license posture, sources used, exclusion policy |
 | [`docs/AUDIT.md`](docs/AUDIT.md) | Audit subsystem: schema, CLI usage, example SQL queries |
 | [`docs/DEMO_SCENARIOS.md`](docs/DEMO_SCENARIOS.md) | 5 walkthrough scenarios incl. the Korean apt 적산 refusal demo |
-| [`docs/POBICON_PITCH.ko.md`](docs/POBICON_PITCH.ko.md) | 포비콘 application pitch (Korean) |
-| `.gem-squared/work-plan/WP-ST-1.md` … `WP-ST-4.md` | The 4 TPMN work plans — A → B \| P contracts per unit, with results |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | VPS deploy guide (Docker + Caddy + rollback + troubleshooting) |
+| `.gem-squared/work-plan/WP-ST-1.md` … `WP-ST-6.md` | TPMN work plans — A → B \| P contracts per unit, with results |
 
 ---
 
@@ -253,9 +282,8 @@ For CLI audit queries:
 
 **MVP 0.2 — planned**
 
-- **WP-ST-5: Expert CV cross-check + Page Type guard** — refactor the single rule-based detector into expert modules (WallExpert / DoorExpert / WindowExpert / SpaceExpert / TextSuppressor / PageTypeExpert) emitting `claim` records, fused by `CrossCheck_F` into final EEF tags. UI gains per-expert vote panels. Reduces over-detection on mixed-sheet drawings (the audit DB shows 747 refusals on one drawing — the expert layer would explain *why* each refused and probably reduce many of them to clean rejects).
-- **WP-ST-6: public Streamlit deployment** — cloud-deploy current demo as a shareable URL; cheap and high-impact for proposal optics.
-- **WP-ST-7: VLM_Verify on ⊬ crops only** — Qwen-VL / Claude vision as a *re-checker* for extrapolated claims, never as a primary detector. VLM may confirm / reject / abstain. Never overrides scale_anchor policy.
+- **Expert CV cross-check + Page Type guard** — refactor the single rule-based detector into expert modules (WallExpert / DoorExpert / WindowExpert / SpaceExpert / TextSuppressor / PageTypeExpert) emitting `claim` records, fused by `CrossCheck_F` into final EEF tags. UI gains per-expert vote panels. Reduces over-detection on mixed-sheet drawings (the audit DB shows 747 refusals on one drawing — the expert layer would explain *why* each refused and probably reduce many of them to clean rejects).
+- **VLM_Verify on ⊬ crops only (BYO key)** — Qwen-VL / Claude vision as a *re-checker* for extrapolated claims, never as a primary detector. The reviewer pastes their own API key into the UI sidebar; **no LLM API key is ever stored in server-side env vars**. VLM may confirm / reject / abstain. Never overrides scale_anchor policy.
 
 **MVP 0.3 — beyond**
 
@@ -274,9 +302,10 @@ For CLI audit queries:
 - **v0.1.2** — 2026-06-05 · 6 units · 130 tests · Wikimedia corpus (12 → 34 drawings) + JPG ingest
 - **v0.1.3** — 2026-06-06 · 4 units · 148 tests · License fix (34 → 50) + preview pane
 - **v0.1.4** — 2026-06-06 · 6 units · Vultr VPS live deploy (`cad-tel.gemsquared.ai`) · Docker + host Caddy integration
+- **v0.1.5** — 2026-06-14 · 3 units · Portfolio reframing + BYO LLM-key pattern (README tech-stack/build emphasis, `docs/DEPLOY.md` secrets-section rewrite, `ui/app.py` BYO sidebar scaffold)
 
-All five work plans (`WP-ST-1` through `WP-ST-5`) are `COMPLETED|SUCCESS` and awaiting `/archive-work`.
+Seven work plans (`WP-ST-1` through `WP-ST-7`) at `COMPLETED|SUCCESS`, some awaiting `/archive-work`.
 
 ---
 
-*CAD Trust Engine Lite · gem-squared/gem2-cad-tel · 2026-06-06*
+*CAD Trust Engine Lite · gem-squared/gem2-cad-tel · Portfolio*

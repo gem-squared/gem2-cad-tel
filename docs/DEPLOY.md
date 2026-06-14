@@ -40,7 +40,7 @@ Kubernetes — single-host orchestration for v0.1.4.
 2. **SSH key** — local: `~/.ssh/id_ed25519_aio_deploy` (or any ed25519 key)
 3. **Domain** — *optional*. With a domain pointed at the VPS, Caddy auto-issues
    a Let's Encrypt cert. Without a domain, Caddy serves plain HTTP on `:80`
-   accessed by IP. **Both modes work for the 포비콘 demo.**
+   accessed by IP. **Both modes work for the portfolio live demo.**
 
 ## Deploy in 4 commands
 
@@ -117,13 +117,25 @@ is not lost during rollback.
 
 ## Secrets handling
 
-- **No `.env` is committed to the repo.** `deploy.sh` generates `/opt/cad-tel/.env`
-  on the VPS at deploy time.
-- The current `.env` only carries `DOMAIN`. If future features need API keys
-  (e.g., VLM_Verify), add them as environment variables in `.env` on the VPS,
-  reference them in `docker-compose.yml`, and update this doc.
-- `.streamlit/secrets.toml` is excluded by `.dockerignore` and `.gitignore` —
-  Streamlit secrets are loaded from the VPS-side file if present.
+This portfolio demo runs LLM API keys **client-side only — BYO (Bring Your Own)**.
+**No LLM API key is ever stored on the server**, in `.env`, in `docker-compose.yml`,
+or in `.streamlit/secrets.toml`.
+
+- **`.env` carries only deploy-time infrastructure config** — currently `DOMAIN`.
+  `deploy.sh` generates `/opt/cad-tel/.env` on the VPS at deploy time; the repo
+  ships no `.env`.
+- **LLM API keys (e.g., for VLM_Verify) — BYO in the UI sidebar.** The visitor
+  pastes their own API key into the Streamlit sidebar; the key lives only in
+  `st.session_state['vlm_api_key']` for the duration of their browser session.
+  It is never logged, never persisted to disk, never written to the audit DB,
+  never copied into a container env var. If the visitor closes the tab, the
+  key is gone.
+- **Why BYO?** A public portfolio demo cannot prudently store an LLM API key
+  server-side — quota would be hijacked, and the visitor cannot audit the key
+  scope. BYO makes the security model trivially auditable: only the visitor
+  ever holds the key.
+- `.streamlit/secrets.toml` is excluded by `.dockerignore` and `.gitignore` so
+  any local-dev secrets stay on the developer's machine.
 
 ## Resource considerations
 

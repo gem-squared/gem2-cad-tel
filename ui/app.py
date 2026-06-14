@@ -191,6 +191,30 @@ st.sidebar.markdown("### Audit")
 st.sidebar.code(f"DB: {audit_db_path}", language="text")
 st.sidebar.caption("Set `GEM2_VISION_AUDIT_DB` env var to override.")
 
+# ── BYO key sidebar (WP-ST-7 U2) ────────────────────────────────────────────
+# LLM API keys for VLM_Verify (v0.2) are NEVER stored server-side.
+# The key lives only in st.session_state for the visitor's browser session —
+# never logged, never persisted, never written to env or the audit DB.
+
+st.sidebar.markdown("### Optional: VLM_Verify (BYO key)")
+st.sidebar.selectbox(
+    "Provider",
+    ["(none)", "Anthropic Claude vision", "Qwen-VL"],
+    key="vlm_provider",
+    help="VLM_Verify lands in v0.2; this scaffold only stores the key in session.",
+)
+st.sidebar.text_input(
+    "API key",
+    type="password",
+    key="vlm_api_key",
+    placeholder="paste only — never persisted server-side",
+    help="Lives only in your browser session. Close the tab → key is gone.",
+)
+if st.session_state.get("vlm_api_key"):
+    st.sidebar.caption("⊢ key in session — VLM_Verify ready when v0.2 lands")
+else:
+    st.sidebar.caption("(no key — VLM_Verify disabled; planned for v0.2)")
+
 tab_run, tab_past = st.tabs(["Run Engine", "Past Runs (Audit)"])
 
 
@@ -440,4 +464,4 @@ with tab_past:
             conn.close()
 
 st.divider()
-st.caption("CAD Trust Engine Lite v0.1.3 — gem2-vision — Refusal Over Bluff, **remembered**.")
+st.caption("CAD Trust Engine Lite v0.1.5 — gem2-vision — Refusal Over Bluff, **remembered**.")

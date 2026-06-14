@@ -4,7 +4,7 @@
 
 ## Source posture
 
-The v0.1 corpus is **curated public data only**. Real production drawings (from 포비콘 or any construction company) are **never** included in this repository. The auditability wedge the engine claims for its detections applies equally to its training data.
+The v0.1 corpus is **curated public data only**. Real production drawings (from any construction company) are **never** included in this repository. The auditability wedge the engine claims for its detections applies equally to its training data.
 
 ## License categories (six accepted)
 
