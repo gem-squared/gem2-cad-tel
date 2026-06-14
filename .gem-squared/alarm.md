@@ -1,17 +1,19 @@
 # ALARM — gem2-vision
-## Last checked: 2026-06-14T04:12:16Z
+## Last checked: 2026-06-14T04:35:51Z
 
 ## Current Status
-**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3, v0.1.4, v0.1.5
-**Live demo:** https://cad-tel.gemsquared.ai
+**Branch:** main  |  **Tags:** v0.1.0, v0.1.1, v0.1.2, v0.1.3, v0.1.4, v0.1.5, v0.1.6
+**Live demo:** https://cad-tel.gemsquared.ai (v0.1.6)
 
-PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 7 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
+PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 8 | DECOMPOSED: 0 | ABORTED: 0 | DEFERRED: 0
 
-> **WP-ST-7 COMPLETED|SUCCESS 2026-06-14** — Portfolio reframing + BYO LLM-key pattern (v0.1.5).
-> 3 unit-works: (U1) README tech-stack/build emphasis + 포비콘 wording stripped from all user-facing
-> surfaces + `docs/POBICON_PITCH.ko.md` deleted; (U2) BYO LLM-key sidebar scaffold in `ui/app.py`
-> + `docs/DEPLOY.md` secrets-section rewritten ("no LLM API key in server-side env"); (U3) version
-> bump v0.1.4 → v0.1.5, single commit, `v0.1.5` tag. 145/145 fast tests still green.
+> **WP-ST-8 COMPLETED|SUCCESS 2026-06-14** — v0.1.6 ash_pits default demo + visible BYO LLM prompt + live deploy.
+> 3 unit-works: (U1) `ui/app.py` gains `DEFAULT_SAMPLE_NAME` + `_default_sample_index` helper +
+> top-of-tab BYO banner + post-run contextual BYO callout (gated on refusals & no key in session)
+> + 5 new tests in `tests/test_ui_app_default_sample.py`; (U2) version bump v0.1.5 → v0.1.6,
+> single commit, pushed to `origin/main` with tags v0.1.5 + v0.1.6; (U3) `./deploy/deploy.sh
+> root@173.199.92.236 --domain cad-tel.gemsquared.ai` + SSH-grep verification of deployed
+> footer + DEFAULT_SAMPLE_NAME constant. 150/150 fast tests green (baseline 145 + 5 new).
 
 ### Active (IN_PROGRESS) — units remaining
 (none)
@@ -26,6 +28,7 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 7 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 | WP-ST-4 | v0.1.3 — pd license fix + re-crawl + Streamlit preview pane | 4dd5c03b | 4 | v0.1.3; 148 tests; 1 retry; 4 commits; corpus 34→50 |
 | WP-ST-5 | v0.1.4 — Vultr VPS deployment (containerized Streamlit + Caddy reverse proxy) | 00d8cde5 | 6 | v0.1.4; 145 tests; 2 mid-flight fixes; 5 commits; **live at https://cad-tel.gemsquared.ai** |
 | WP-ST-7 | v0.1.5 — Portfolio reframing + BYO LLM-key pattern | 7b84e197 | 3 | v0.1.5; 145 tests; 0 retries; 1 commit; 포비콘 wording removed, `docs/POBICON_PITCH.ko.md` deleted, BYO sidebar scaffold landed |
+| WP-ST-8 | v0.1.6 — ash_pits default demo + visible BYO LLM prompt + live deploy | fb9115d5 | 3 | v0.1.6; 150 tests (+5 new); 0 retries; 1 commit; live at https://cad-tel.gemsquared.ai |
 
 ### PENDING (not started)
 (none — WP-ST-6 shipped live 2026-06-08T00:51:54Z)
@@ -45,6 +48,7 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 7 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 | WP | Date | Summary | STATE |
 |----|------|---------|-------|
+| WP-ST-8 | 2026-06-14 | v0.1.6 ash_pits default demo + visible BYO LLM prompt + live deploy — 3 units: (U1) `ui/app.py` gains `DEFAULT_SAMPLE_NAME` ash_pits constant + `_default_sample_index` helper (fallback-safe) + top-of-Run-Engine-tab BYO banner + post-run contextual BYO callout gated on refusals & no-key-in-session + 5 new tests; (U2) version bump v0.1.5 → v0.1.6, single commit, pushed to `origin/main` with tags v0.1.5 + v0.1.6; (U3) `./deploy/deploy.sh` + SSH-grep verification of deployed footer + DEFAULT_SAMPLE_NAME. 150/150 fast tests green (+5 new). | SUCCESS |
 | WP-ST-7 | 2026-06-14 | v0.1.5 Portfolio reframing — 3 units: (U1) README tech-stack/build emphasis + 포비콘 wording stripped from all user-facing surfaces + `docs/POBICON_PITCH.ko.md` deleted; (U2) BYO LLM-key sidebar scaffold in `ui/app.py` + `docs/DEPLOY.md` secrets-section rewritten with explicit "no LLM API key in server-side env" posture; (U3) version bump v0.1.4 → v0.1.5, single commit + `v0.1.5` tag. | SUCCESS |
 | WP-ST-5 | 2026-06-06 | Vultr VPS deployment v0.1.4 — 6 units: container artifacts (Dockerfile + compose + Caddyfile + .dockerignore), bootstrap.sh (Docker + ufw + 2GB swap, idempotent), deploy.sh (rsync + compose up + healthcheck + honest smoke), docs/DEPLOY.md, **live SSH deploy on Vultr 173.199.92.236** (Ubuntu 24.04; integrated with pre-existing host Caddy via vhost append), README badge + tag. Live URL: https://cad-tel.gemsquared.ai. | SUCCESS |
 | WP-ST-4 | 2026-06-06 | v0.1.3 license fix + preview pane — 4 units. | SUCCESS |
@@ -56,8 +60,8 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 7 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 
 ## Archive Summary
 **Archived:** 0
-**Awaiting /archive-work:** 7 (WP-ST-1 + WP-ST-2 + WP-ST-3 + WP-ST-4 + WP-ST-5 + WP-ST-6 + WP-ST-7)
-**Remaining in work-plan/:** 7 files
+**Awaiting /archive-work:** 8 (WP-ST-1 + WP-ST-2 + WP-ST-3 + WP-ST-4 + WP-ST-5 + WP-ST-6 + WP-ST-7 + WP-ST-8)
+**Remaining in work-plan/:** 8 files
 
 ---
 
@@ -86,3 +90,4 @@ PENDING: 0 | IN_PROGRESS: 0 | COMPLETED: 7 | DECOMPOSED: 0 | ABORTED: 0 | DEFERR
 *Updated: 2026-06-06T00:35:00Z — WP-ST-4 COMPLETED|SUCCESS, v0.1.3, 148 tests (corpus 34→50)*
 *Updated: 2026-06-06T01:50:00Z — WP-ST-5 COMPLETED|SUCCESS, v0.1.4, live at cad-tel.gemsquared.ai (Vultr VPS via host Caddy + Docker single-service compose). Counters: PENDING 1→0, COMPLETED 4→5.*
 *Updated: 2026-06-14T04:12:16Z — WP-ST-7 COMPLETED|SUCCESS, v0.1.5, Portfolio reframing + BYO LLM-key pattern. 포비콘 wording stripped from user-facing surfaces, `docs/POBICON_PITCH.ko.md` deleted, BYO sidebar scaffold landed. Counters: COMPLETED 6→7. Tags: + v0.1.5.*
+*Updated: 2026-06-14T04:35:51Z — WP-ST-8 COMPLETED|SUCCESS, v0.1.6, ash_pits default demo + visible BYO LLM prompt + live deploy. ui/app.py gains DEFAULT_SAMPLE_NAME constant + helper + main-panel BYO banner + post-run callout + 5 new tests. Pushed to origin/main with tags v0.1.5 + v0.1.6. Counters: COMPLETED 7→8. Tags: + v0.1.6.*

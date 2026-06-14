@@ -1,6 +1,6 @@
 [project]
 name = "cad-trust-engine-lite"
-version = "0.1.5"
+version = "0.1.6"
 description = "CAD Trust Engine Lite — portfolio demo of auditable PNG/PDF floor-plan recognition for Korean ConTech 적산"
 requires-python = ">=3.11"
 authors = [{ name = "David Seo of GEM².AI", email = "david@gineers.ai" }]

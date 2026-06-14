@@ -4,7 +4,7 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.5** · Portfolio · Auditable CAD floor-plan recognition (Korean ConTech 적산 wedge) · Python 3.11+ · MIT 호환 (소스 비공개, corpus는 공개 라이선스)
+**v0.1.6** · Portfolio · Auditable CAD floor-plan recognition (Korean ConTech 적산 wedge) · Python 3.11+ · MIT 호환 (소스 비공개, corpus는 공개 라이선스)
 
 🟢 **라이브 데모: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — 브라우저에서 바로 클릭 가능. 첫 OCR 호출 시 PaddleOCR 모델 다운로드(~1-2분)로 느릴 수 있음.
 
@@ -229,7 +229,7 @@ v0.1.3에서 license mapping 보정(`pd` / `cc0` / `public-domain` 정확 매칭
 
 ---
 
-## 빌드 현황 (v0.1.5 — 태그 6개)
+## 빌드 현황 (v0.1.6 — 태그 7개)
 
 | 릴리스 | 일자 | 핵심 변경 |
 |--------:|------|----------|
@@ -239,6 +239,7 @@ v0.1.3에서 license mapping 보정(`pd` / `cc0` / `public-domain` 정확 매칭
 | **v0.1.3** | 2026-06-06 | License mapping 보정(exact-vs-prefix matcher)으로 public domain 도면 16장 추가 확보 → 총 50장 + Streamlit 도면 dropdown 우측 preview pane 추가 + 테스트 148개 |
 | **v0.1.4** | 2026-06-06 | Vultr VPS 라이브 배포 (Docker + 호스트 Caddy 통합) → 공개 URL `cad-tel.gemsquared.ai` |
 | **v0.1.5** | 2026-06-14 | Portfolio reframing — README tech-stack/build flow emphasis + BYO LLM-key 패턴 (UI sidebar scaffold + docs/DEPLOY.md secrets-section 재작성) |
+| **v0.1.6** | 2026-06-14 | ash_pits 기본 데모 + 메인 패널 BYO 프롬프트 (상단 banner + 거부 영역 발생 시 post-run callout) + 라이브 배포 |
 
 ### 구체적 수치
 
@@ -352,8 +353,9 @@ MVP 0.2의 핵심은 fine-tuning이 아니라 **expert CV cross-checking**입니
 - **v0.1.3** — 2026-06-06 · 4 unit · 148 tests · License 보정 (34 → 50장) + preview pane
 - **v0.1.4** — 2026-06-06 · 6 unit · Vultr VPS 라이브 배포 (`cad-tel.gemsquared.ai`) · Docker + 호스트 Caddy 통합
 - **v0.1.5** — 2026-06-14 · 3 unit · Portfolio 재포지셔닝 + BYO LLM-key 패턴 (README 기술스택/빌드 강조, `docs/DEPLOY.md` secrets-section 재작성, `ui/app.py` BYO sidebar scaffold)
+- **v0.1.6** — 2026-06-14 · 3 unit · ash_pits Wikimedia 단면도를 기본 데모로 + 메인 패널 BYO 프롬프트 (상단 banner + 거부 영역 발생 시 post-run callout) + Vultr VPS 라이브 재배포
 
-7개 work plan(`WP-ST-1` ~ `WP-ST-7`)이 `COMPLETED|SUCCESS` 상태이며, 일부는 `/archive-work` 대기 중.
+8개 work plan(`WP-ST-1` ~ `WP-ST-8`)이 `COMPLETED|SUCCESS` 상태이며, 일부는 `/archive-work` 대기 중.
 
 ---
 

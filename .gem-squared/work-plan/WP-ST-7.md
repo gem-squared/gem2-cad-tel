@@ -65,7 +65,7 @@ Reframe gem2-vision (CAD Trust Engine Lite) as a portfolio piece: drop employer-
 - State: SUCCESS
 - Truth:
 
-### 3. Verify + version bump + commit + tag v0.1.5 | STATUS: IN_PROGRESS
+### 3. Verify + version bump + commit + tag v0.1.5 | STATUS: COMPLETED
 - A: U1 + U2 complete. `pyproject.toml` version still `0.1.4`. README footer caption `CAD Trust Engine Lite v0.1.3` (note: `ui/app.py:443` carries v0.1.3 — must bump to v0.1.5). `alarm.md` reflects last state at WP-ST-6.
 - B: Smoke verification battery:
   - `grep -rn '포비콘\|Pobicon' .` (excluding `.git`, `.venv`, `.gem-squared/work-plan/`, `.gem-squared/alarm.md`) → **0 hits**.
@@ -77,9 +77,18 @@ Reframe gem2-vision (CAD Trust Engine Lite) as a portfolio piece: drop employer-
 - P: U1 + U2 STATE = SUCCESS. Working tree clean except U1/U2 edits + version bumps + alarm.md.
 - Clarity: 95%
 - Unclear: nothing material — standard lifecycle close.
-- Tags: [verifying-build, bumping-version, tagging-release]
-- Result:
-- State:
+- Tags: [verifying-build, bumping-version, tagging-release, bundling-wpst6-closeout]
+- Result: Final smoke battery PASSED:
+  - **grep '포비콘\|Pobicon\|pobicon'** (excluding `.git`, `.venv`, `.gem-squared/work-plan/`, `.gem-squared/alarm.md`, `.gem-squared/external-skills/`, `.claude/projects/`) → **0 hits** ⊢.
+  - **pytest --ignore=tests/test_corpus_pipeline_smoke.py -x -q** → **145 passed, 2 skipped** (SVG-conditional; baseline preserved) ⊢.
+  - **Streamlit boot smoke**: `streamlit run ui/app.py --server.port 18501 --server.headless true --browser.gatherUsageStats false &` → after 25s warmup, `curl http://localhost:18501/_stcore/health` → **HTTP 200 in 0.0017s** ⊢; `curl http://localhost:18501/` → **HTTP 200, 1522 bytes** ⊢; stderr tail showed only documented CORS/Watchdog informational warnings, no Python exceptions ⊢; clean kill on `pkill -f`.
+  - **Version bumps**: `pyproject.toml` version `0.1.0` → `0.1.5` (aligns package version with tag history; the v0.1.0..v0.1.4 tags pre-existed without pyproject sync) ⊢. `ui/app.py:443` footer caption `v0.1.3` → `v0.1.5` ⊢. `README.md` line 7 + 빌드 현황 header (v0.1.4→v0.1.5 / 태그 5→6) + new v0.1.5 row in 빌드 현황 table + new v0.1.5 line in 진행 상황 section + "6개" → "7개" work-plan count ⊢. `README.en.md` mirrors (line 7 + What's built header + new v0.1.5 row + Status section line + "Six" → "Seven" work-plans) ⊢.
+  - **alarm.md**: Last-checked timestamp → 2026-06-14T04:12:16Z. Tags list extended with v0.1.5. Counters: COMPLETED 6 → 7. WP-ST-7 added in both "Awaiting /archive-work" + "Recently COMPLETED" tables. Archive Summary: 5 → 7 awaiting archive. Footer Updated-line appended ⊢.
+  - **Single git commit** per CLAUDE.md convention: `f713575` — title `WP-ST-7: Portfolio reframing v0.1.5 — README tech-stack/build emphasis + BYO LLM-key pattern`, full body with U1/U2/U3 decomposition + smoke results + WP-ST-6 closeout footnote + Date `2026-06-14 ...:...:... KST` + Author `David Seo of GEM².AI`. 14 files (10 M + 2 A + 1 D + 1 M from prior session); +485 / -262. No hook failures. NOT pushed (per CLAUDE.md: never push without explicit request).
+  - **Tag**: `git tag -a v0.1.5 -m "v0.1.5 — Portfolio reframing + BYO LLM-key pattern"` → `git tag --list 'v0.1.*'` confirms v0.1.0 .. v0.1.5 (6 tags) ⊢.
+  - **Working tree**: `git status --short` → clean ⊢.
+  - **Bundled WP-ST-6 closeout** (pre-session pending edits): WP-ST-6 had been shipped in commit `9834174` but the WP-ST-6.md unit STATUS / STATE / Result fields had not yet been committed. This commit captures those fields in the same atomic operation rather than leaving the working tree dirty. Mentioned in the commit body footnote.
+- State: SUCCESS
 - Truth:
 
 ## References

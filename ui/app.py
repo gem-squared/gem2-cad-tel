@@ -26,6 +26,7 @@ from cad_trust.schema import EngineOutput, Object  # noqa: E402
 
 SAMPLES_DIR = ROOT / "data" / "samples"
 DEFAULT_AUDIT_DB = ROOT / ".gem-squared" / "audit.sqlite"
+DEFAULT_SAMPLE_NAME = "wm_00104_bm--cross_section_of_ash_pits--wabash_railroad--decatur_il_50f7feda-0ce0-4.jpg"
 
 TYPE_COLORS = {
     "wall_structural": (40, 40, 200),
@@ -62,6 +63,19 @@ def _sort_samples_for_dropdown(paths: list[Path]) -> list[Path]:
             return (1, name)
         return (2, name)
     return sorted(paths, key=rank)
+
+
+def _default_sample_index(sample_options: list[str]) -> int:
+    """Return the dropdown index of the canonical default sample.
+
+    Falls back to 1 if DEFAULT_SAMPLE_NAME is absent from the corpus (e.g., file
+    removed), or 0 if no samples exist at all (only "(upload your own)").
+    """
+    if DEFAULT_SAMPLE_NAME in sample_options:
+        return sample_options.index(DEFAULT_SAMPLE_NAME)
+    if len(sample_options) > 1:
+        return 1
+    return 0
 
 
 # ── Preview helpers (WP-ST-4 U3) ────────────────────────────────────────────
@@ -221,6 +235,10 @@ tab_run, tab_past = st.tabs(["Run Engine", "Past Runs (Audit)"])
 # ── Tab 1: Run Engine ───────────────────────────────────────────────────────
 
 with tab_run:
+    st.info(
+        "🔑 Optional — paste your own LLM API key in the **sidebar** to enable "
+        "VLM_Verify (v0.2 preview). No key required for the v0.1 trust pipeline below."
+    )
     col_pick, col_preview = st.columns([2, 3])
     with col_pick:
         samples = _sort_samples_for_dropdown(
@@ -231,7 +249,7 @@ with tab_run:
             + list(SAMPLES_DIR.glob("*.svg"))
         )
         sample_options = ["(upload your own)"] + [s.name for s in samples]
-        choice = st.selectbox("Drawing", sample_options, index=1 if samples else 0)
+        choice = st.selectbox("Drawing", sample_options, index=_default_sample_index(sample_options))
         uploaded = None
         if choice == "(upload your own)":
             uploaded = st.file_uploader("Upload PNG / JPG / PDF", type=["png", "jpg", "jpeg", "pdf"])
@@ -267,6 +285,12 @@ with tab_run:
                 output = run_pipeline(chosen_path, audit_db_path=audit_db_path)
                 canonical = ingest(chosen_path).canonical_image
             st.success("Pipeline complete. Run logged to audit DB.")
+
+            if output.refusals and not st.session_state.get("vlm_api_key"):
+                st.info(
+                    f"💡 VLM_Verify could re-check these {len(output.refusals)} refused "
+                    "region(s). Paste your LLM API key in the sidebar to enable (v0.2 preview)."
+                )
 
             col_img, col_data = st.columns([3, 2])
             with col_img:
@@ -464,4 +488,4 @@ with tab_past:
             conn.close()
 
 st.divider()
-st.caption("CAD Trust Engine Lite v0.1.5 — gem2-vision — Refusal Over Bluff, **remembered**.")
+st.caption("CAD Trust Engine Lite v0.1.6 — gem2-vision — Refusal Over Bluff, **remembered**.")

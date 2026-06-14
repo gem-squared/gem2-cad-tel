@@ -4,7 +4,7 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.5** · Portfolio · Auditable CAD floor-plan recognition for Korean ConTech 적산 · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
+**v0.1.6** · Portfolio · Auditable CAD floor-plan recognition for Korean ConTech 적산 · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
 
 🟢 **Live demo: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — click through directly in your browser. First OCR call may be slow (~1-2 min) while PaddleOCR downloads models on cold start.
 
@@ -197,7 +197,7 @@ Same posture applied to corpus building. Every sample carries a `ProvenanceRecor
 
 ---
 
-## What's built (v0.1.5 — 6 tagged releases)
+## What's built (v0.1.6 — 7 tagged releases)
 
 | Release | Lands | Highlights |
 |--------:|------:|------------|
@@ -207,6 +207,7 @@ Same posture applied to corpus building. Every sample carries a `ProvenanceRecor
 | **v0.1.3** | 2026-06-06 | License mapping fix (exact-vs-prefix matcher) unlocked +16 PD drawings → 50 total + Streamlit preview pane right of the Drawing dropdown + 148 tests |
 | **v0.1.4** | 2026-06-06 | Vultr VPS live deploy (Docker + host Caddy integration) → public URL `cad-tel.gemsquared.ai` |
 | **v0.1.5** | 2026-06-14 | Portfolio reframing — README tech-stack/build emphasis + BYO LLM-key pattern (UI sidebar scaffold + `docs/DEPLOY.md` secrets-section rewrite) |
+| **v0.1.6** | 2026-06-14 | ash_pits Wikimedia cross-section default demo + main-panel BYO prompts (top banner + contextual post-run callout when refusals present) + live VPS redeploy |
 
 ### Concrete numbers
 
@@ -303,8 +304,9 @@ Concrete engineering practices visible in the commit history and tests:
 - **v0.1.3** — 2026-06-06 · 4 units · 148 tests · License fix (34 → 50) + preview pane
 - **v0.1.4** — 2026-06-06 · 6 units · Vultr VPS live deploy (`cad-tel.gemsquared.ai`) · Docker + host Caddy integration
 - **v0.1.5** — 2026-06-14 · 3 units · Portfolio reframing + BYO LLM-key pattern (README tech-stack/build emphasis, `docs/DEPLOY.md` secrets-section rewrite, `ui/app.py` BYO sidebar scaffold)
+- **v0.1.6** — 2026-06-14 · 3 units · ash_pits Wikimedia cross-section as default demo + main-panel BYO prompts (top banner + contextual post-run callout) + Vultr VPS live redeploy
 
-Seven work plans (`WP-ST-1` through `WP-ST-7`) at `COMPLETED|SUCCESS`, some awaiting `/archive-work`.
+Eight work plans (`WP-ST-1` through `WP-ST-8`) at `COMPLETED|SUCCESS`, some awaiting `/archive-work`.
 
 ---
 
