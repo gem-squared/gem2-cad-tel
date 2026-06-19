@@ -1,0 +1,83 @@
+# Build output
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Runtime state
+/.run/
+/temp/
+temp/
+temp/*
+
+# Test
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+*.pem
+*.key
+
+# gem2 local state (not tracked)
+.gem-squared/work-plan/*.tmp
+.gem-squared/audit.sqlite
+.gem-squared/audit.sqlite-journal
+.gem-squared/audit.sqlite-wal
+.gem-squared/audit.sqlite-shm
+
+# WP-ST-3 crawl summary (runtime state; regeneratable via scripts/crawl_corpus.py)
+.gem-squared/crawl_summary.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Virtualenv
+.venv/
+venv/
+.python-version
+
+# PaddleOCR model cache
+.paddleocr/
+~/.paddleocr/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# ───── Confidential / internal — not for public repo ───────────────
+CLAUDE.md
+README-internal.md
+Doc/
+Doc/*
+.gem-squared/
+.gem-squared/*
+.claude/
+.claude/*

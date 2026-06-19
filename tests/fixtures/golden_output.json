@@ -1,0 +1,187 @@
+{
+  "drawing_id": "golden_001",
+  "objects": [
+    {
+      "object_id": "obj_0001",
+      "type": "wall_structural",
+      "type_epistemic": {
+        "tag": "⊢",
+        "evidence": [
+          {"source": "opencv_line", "signal": "parallel thick line pair, gap=18px, length=312px"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "geometry": {
+        "kind": "polyline",
+        "coords_px": [[120.0, 80.0], [432.0, 80.0]]
+      },
+      "geometry_epistemic": {
+        "tag": "⊨",
+        "evidence": [
+          {"source": "opencv_line", "signal": "two end-points consistent across LSD passes"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "measurement_mm": null,
+      "measurement_epistemic": {
+        "tag": "⊥",
+        "evidence": [],
+        "basis": null,
+        "gap": "No scale_anchor — dimension_text match failed below tolerance"
+      },
+      "review_status": "needs_human"
+    },
+    {
+      "object_id": "obj_0002",
+      "type": "door",
+      "type_epistemic": {
+        "tag": "⊨",
+        "evidence": [
+          {"source": "opencv_arc", "signal": "arc detected, radius=42px"},
+          {"source": "opencv_line", "signal": "opening gap in wall_structural span"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "geometry": {
+        "kind": "bbox",
+        "coords_px": [[300.0, 78.0], [384.0, 122.0]]
+      },
+      "geometry_epistemic": {
+        "tag": "⊨",
+        "evidence": [
+          {"source": "opencv_arc", "signal": "bbox encloses arc + opening"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "measurement_mm": null,
+      "measurement_epistemic": {
+        "tag": "⊥",
+        "evidence": [],
+        "basis": null,
+        "gap": "No scale_anchor"
+      },
+      "review_status": "needs_human"
+    },
+    {
+      "object_id": "obj_0003",
+      "type": "dimension_text",
+      "type_epistemic": {
+        "tag": "⊢",
+        "evidence": [
+          {"source": "paddleocr", "signal": "text='4200', char_conf=0.94, regex=dim"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "geometry": {
+        "kind": "bbox",
+        "coords_px": [[140.0, 50.0], [220.0, 72.0]]
+      },
+      "geometry_epistemic": {
+        "tag": "⊢",
+        "evidence": [
+          {"source": "paddleocr", "signal": "bbox from PaddleOCR detection"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "measurement_mm": null,
+      "measurement_epistemic": {
+        "tag": "⊥",
+        "evidence": [],
+        "basis": null,
+        "gap": "Scale anchor extraction did not match this dimension to a wall span within tolerance"
+      },
+      "review_status": "needs_human"
+    },
+    {
+      "object_id": "obj_0004",
+      "type": "window",
+      "type_epistemic": {
+        "tag": "⊬",
+        "evidence": [
+          {"source": "opencv_double_line", "signal": "two parallel lines inside wall span"}
+        ],
+        "basis": "Double-line pattern is necessary but not sufficient — could be a balcony sash; no semantic verifier in v0.1",
+        "gap": null
+      },
+      "geometry": {
+        "kind": "bbox",
+        "coords_px": [[500.0, 80.0], [600.0, 105.0]]
+      },
+      "geometry_epistemic": {
+        "tag": "⊨",
+        "evidence": [
+          {"source": "opencv_double_line", "signal": "span end-points within wall"}
+        ],
+        "basis": null,
+        "gap": null
+      },
+      "measurement_mm": null,
+      "measurement_epistemic": {
+        "tag": "⊥",
+        "evidence": [],
+        "basis": null,
+        "gap": "No scale_anchor"
+      },
+      "review_status": "needs_human"
+    }
+  ],
+  "aggregates": {
+    "wall_count": {
+      "value": 1,
+      "epistemic": {
+        "tag": "⊨",
+        "evidence": [{"source": "compose", "signal": "1 wall object with type_epistemic ∈ {⊢, ⊨}"}],
+        "basis": null,
+        "gap": null
+      },
+      "warning": null
+    },
+    "door_count": {
+      "value": 1,
+      "epistemic": {
+        "tag": "⊨",
+        "evidence": [{"source": "compose", "signal": "1 door object with type_epistemic ⊨"}],
+        "basis": null,
+        "gap": null
+      },
+      "warning": null
+    },
+    "window_count": {
+      "value": 1,
+      "epistemic": {
+        "tag": "⊬",
+        "evidence": [{"source": "compose", "signal": "1 window candidate with type_epistemic ⊬"}],
+        "basis": "1 of 1 window contributors is ⊬-tagged — count is upper-bound, not confirmed",
+        "gap": null
+      },
+      "warning": "1 of 1 window candidates is ⊬-tagged (could be balcony_sash); count carries taint"
+    },
+    "measured_wall_length_mm": {
+      "value": null,
+      "epistemic": {
+        "tag": "⊥",
+        "evidence": [],
+        "basis": null,
+        "gap": "scale_anchor.detected = false; mm conversion refused per Measurement_Policy"
+      },
+      "warning": "No reliable scale anchor detected — mm aggregate is null/⊥ by policy"
+    }
+  },
+  "refusals": [
+    {
+      "region": [[600.0, 200.0], [780.0, 320.0]],
+      "why": "Symbol candidate region — partial arc + ambiguous opening; below Symbol_F evidence threshold; routed to refusal_candidates → refusals"
+    }
+  ],
+  "scale_anchor": {
+    "detected": false,
+    "px_per_mm": null,
+    "source": null
+  }
+}

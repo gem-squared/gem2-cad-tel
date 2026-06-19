@@ -1,0 +1,73 @@
+# Heavy / sensitive paths excluded from the Docker build context.
+# Keeps the image lean + prevents secrets from accidentally landing in layers.
+
+# Local venv (built fresh inside the container)
+.venv/
+venv/
+.python-version
+
+# Git internals (we want source, not history, inside the image)
+.git/
+.gitignore
+.gitattributes
+
+# TPMN local state — useful for local dev, irrelevant in container
+.gem-squared/
+
+# Test caches + coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Compiled Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# Build artifacts
+dist/
+build/
+
+# IDE / OS junk
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local audit DB — must not bake into image; mounted as volume in compose
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Streamlit secrets — never bake in
+.streamlit/secrets.toml
+
+# Environment files (DOMAIN etc. land on VPS via /opt/cad-tel/.env at deploy time)
+.env
+.env.*
+
+# Pytest fixture artifacts that aren't needed at runtime
+tests/fixtures/*.pdf
+tests/fixtures/smoke_text.png
+
+# Tests directory — not needed at runtime. Saves ~few MB.
+# (Comment out if you want tests runnable inside the container)
+tests/
+
+# Deploy artifacts themselves — Dockerfile/etc. don't need to live inside the image
+deploy/Caddyfile
+deploy/docker-compose.yml
+deploy/bootstrap.sh
+deploy/deploy.sh
+deploy/.dockerignore
+
+# Documentation source — not strictly needed at runtime
+docs/
+README.md
+README.en.md
+*.md
+!ui/*.md
