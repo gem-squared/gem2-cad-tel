@@ -10,6 +10,10 @@
 temp/
 temp/*
 
+docs/
+docs/*
+
+
 # Test
 *.test
 *.out
@@ -81,3 +85,17 @@ Doc/*
 .gem-squared/*
 .claude/
 .claude/*
+
+# gem2-skill-init: confidential-exclusion v1
+# Internal cognitive OS state — never push to a public remote.
+# If you intentionally want to track parts of these (e.g. work-plan
+# narrative), add explicit `!`-negation rules BELOW this block.
+CLAUDE.md
+README-internal.md
+Doc/
+Doc/*
+.gem-squared/
+.gem-squared/*
+.claude/
+.claude/*
+# End gem2-skill-init confidential-exclusion v1
