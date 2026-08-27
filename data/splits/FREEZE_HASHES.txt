@@ -1,0 +1,10 @@
+# WP-ST-3 U3 — SPLIT FREEZE HASHES (SHA-256)
+# Generated: 2026-08-25T13:20:00+0900
+# These digests anchor the frozen test split(s). Any change → new digest → new freeze.
+
+c1f7930c6346191793af9503c4a261b60ac2271b09ec61090ed969bd40b03316  data/splits/object_recognition/test.json
+154cfef94d6e124fdbd8d3f3ccac26a1288f903cef89a5dc43461f1487ecc880  data/splits/object_recognition/val.json
+3c2102be746828bc8f974798a5434548fcaa209d399d30f3734f057793a7fe93  data/splits/object_recognition/train.json
+73cbb6b9694f26e3fdc854948ab2a5efeebd22cd5acadd606df90911008a85c7  data/splits/guard/positive.json
+6ca38c0740a2d032269b078c7d88aa0a7426f6acf37634c6f9cd5efd1da63153  data/splits/guard/negative.json
+043119f5abc8395d4078505cf65b186bdcd2def2b287fb7436826e8336c830fc  data/splits/guard/ambiguous.json

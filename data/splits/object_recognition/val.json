@@ -1,0 +1,52 @@
+{
+  "purpose": "object_recognition",
+  "split": "val",
+  "generated_at": "2026-08-25T13:20:00+0900",
+  "generated_by": "scripts/build_splits.py from data/reconciliation/eligibility_classification.json",
+  "source_review_status": "AI_PROVISIONAL — awaiting Human eligibility review per WP-ST-3 U4 policy",
+  "family_derivation_rule": "synthetic → prefix-before-numeric-suffix; wikimedia_commons → per-drawing-id (each is own family)",
+  "split_algorithm": "per-source proportional: sort families by sha256(family_id) asc; 1st→test, 2nd→val, rest→train per source (guarantees non-empty val/test on small corpus)",
+  "entries": [
+    {
+      "drawing_id": "synth_apt_three_room_01",
+      "family_id": "synthetic::synth_apt_three_room",
+      "split": "val",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_three_room_02",
+      "family_id": "synthetic::synth_apt_three_room",
+      "split": "val",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_three_room_03",
+      "family_id": "synthetic::synth_apt_three_room",
+      "split": "val",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_all_hands_2019_bently_reserve_first_floor",
+      "family_id": "wikimedia_commons::wm_all_hands_2019_bently_reserve_first_floor",
+      "split": "val",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    }
+  ],
+  "count": 4
+}

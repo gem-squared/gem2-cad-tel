@@ -1,0 +1,52 @@
+{
+  "purpose": "object_recognition",
+  "split": "test",
+  "generated_at": "2026-08-25T13:20:00+0900",
+  "generated_by": "scripts/build_splits.py from data/reconciliation/eligibility_classification.json",
+  "source_review_status": "AI_PROVISIONAL — awaiting Human eligibility review per WP-ST-3 U4 policy",
+  "family_derivation_rule": "synthetic → prefix-before-numeric-suffix; wikimedia_commons → per-drawing-id (each is own family)",
+  "split_algorithm": "per-source proportional: sort families by sha256(family_id) asc; 1st→test, 2nd→val, rest→train per source (guarantees non-empty val/test on small corpus)",
+  "entries": [
+    {
+      "drawing_id": "synth_office_open_01",
+      "family_id": "synthetic::synth_office_open",
+      "split": "test",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_office_open_02",
+      "family_id": "synthetic::synth_office_open",
+      "split": "test",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_office_open_03",
+      "family_id": "synthetic::synth_office_open",
+      "split": "test",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_v_kozolov_blueprints",
+      "family_id": "wikimedia_commons::wm_a_v_kozolov_blueprints",
+      "split": "test",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊨",
+      "classification_review_status": "AI_PROVISIONAL"
+    }
+  ],
+  "count": 4
+}

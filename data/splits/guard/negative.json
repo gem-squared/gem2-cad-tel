@@ -1,0 +1,83 @@
+{
+  "purpose": "floorplan_guard",
+  "verdict": "negative",
+  "generated_at": "2026-08-25T13:20:00+0900",
+  "generated_by": "scripts/build_splits.py from data/reconciliation/eligibility_classification.json",
+  "source_review_status": "AI_PROVISIONAL — awaiting Human eligibility review per WP-ST-3 U4 policy",
+  "note": "WP-ST-4 U2 further partitions this set into train/val/test for the guard classifier bake-off",
+  "entries": [
+    {
+      "drawing_id": "wm_00104_bm--cross_section_of_ash_pits--wabash_railroad--decatur_il_50f7feda-0ce0-4",
+      "family_id": "wikimedia_commons::wm_00104_bm--cross_section_of_ash_pits--wabash_railroad--decatur_il_50f7feda-0ce0-4",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1822_ornamental_hot-house_window_harwood_folliott_building_plan_antique_fisher",
+      "family_id": "wikimedia_commons::wm_1822_ornamental_hot-house_window_harwood_folliott_building_plan_antique_fisher",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1827_a_double_vinery_building_plan_antique_illustration_print_fisher_w_mallinson",
+      "family_id": "wikimedia_commons::wm_1827_a_double_vinery_building_plan_antique_illustration_print_fisher_w_mallinson",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1_2-3d_model",
+      "family_id": "wikimedia_commons::wm_1_2-3d_model",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_3dpraxisstudio",
+      "family_id": "wikimedia_commons::wm_3dpraxisstudio",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_cross-section_of_an_anatomy_theatre_watercolour_by_charle_wellcome_v0010451",
+      "family_id": "wikimedia_commons::wm_a_cross-section_of_an_anatomy_theatre_watercolour_by_charle_wellcome_v0010451",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "CC-BY",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_handbook_of_indian_art_-_plate_41b",
+      "family_id": "wikimedia_commons::wm_a_handbook_of_indian_art_-_plate_41b",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_architectural_projections",
+      "family_id": "wikimedia_commons::wm_architectural_projections",
+      "guard_verdict": "negative",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    }
+  ],
+  "count": 8
+}

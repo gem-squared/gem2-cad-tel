@@ -1,0 +1,10 @@
+{
+  "drawing_id": "wm_1827_a_double_vinery_building_plan_antique_illustration_print_fisher_w_mallinson",
+  "guard_verdict": "negative",
+  "purpose": "floorplan_guard",
+  "review_status_overall": "unreviewed",
+  "annotations": [],
+  "generated_at": "2026-08-25T13:30:00+0900",
+  "generated_by": "WP-ST-3 U4 skeleton pass",
+  "next_action": "Guard training uses the label = verdict itself. Per-drawing annotations optional for auxiliary features."
+}

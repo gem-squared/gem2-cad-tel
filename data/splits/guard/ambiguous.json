@@ -1,0 +1,137 @@
+{
+  "purpose": "floorplan_guard",
+  "verdict": "ambiguous",
+  "generated_at": "2026-08-25T13:20:00+0900",
+  "generated_by": "scripts/build_splits.py from data/reconciliation/eligibility_classification.json",
+  "source_review_status": "AI_PROVISIONAL — awaiting Human eligibility review per WP-ST-3 U4 policy",
+  "note": "WP-ST-4 U2 further partitions this set into train/val/test for the guard classifier bake-off",
+  "entries": [
+    {
+      "drawing_id": "wm_00019_bh--reinforced_oil_house_d1ac2b92-d1d1-423d-b796-bc6b7f5606fc",
+      "family_id": "wikimedia_commons::wm_00019_bh--reinforced_oil_house_d1ac2b92-d1d1-423d-b796-bc6b7f5606fc",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_00091_bh--coal_trestle--stirling_nj_412045da-780d-40f3-abd6-1a360f833617",
+      "family_id": "wikimedia_commons::wm_00091_bh--coal_trestle--stirling_nj_412045da-780d-40f3-abd6-1a360f833617",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_02_bro_park_2000",
+      "family_id": "wikimedia_commons::wm_02_bro_park_2000",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_02l",
+      "family_id": "wikimedia_commons::wm_02l",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_03l",
+      "family_id": "wikimedia_commons::wm_03l",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1647733_page_1",
+      "family_id": "wikimedia_commons::wm_1647733_page_1",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1853_charles_barry_49",
+      "family_id": "wikimedia_commons::wm_1853_charles_barry_49",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_1902_architektonische_hochbau-muster-hefte_11_1_s_21_otto_l_er_zeichnung_stallge",
+      "family_id": "wikimedia_commons::wm_1902_architektonische_hochbau-muster-hefte_11_1_s_21_otto_l_er_zeichnung_stallge",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_2014_siedlungshaus_bredenfelde",
+      "family_id": "wikimedia_commons::wm_2014_siedlungshaus_bredenfelde",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_4thnatbank",
+      "family_id": "wikimedia_commons::wm_4thnatbank",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_76_plan",
+      "family_id": "wikimedia_commons::wm_76_plan",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_description_of_bath_fleuron_t064760-17",
+      "family_id": "wikimedia_commons::wm_a_description_of_bath_fleuron_t064760-17",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_treatise_on_theatres_by_george_saunders_fleuron_t117829-21",
+      "family_id": "wikimedia_commons::wm_a_treatise_on_theatres_by_george_saunders_fleuron_t117829-21",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_aanzichten_bouwplan",
+      "family_id": "wikimedia_commons::wm_aanzichten_bouwplan",
+      "guard_verdict": "ambiguous",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "classification_review_status": "AI_PROVISIONAL"
+    }
+  ],
+  "count": 14
+}

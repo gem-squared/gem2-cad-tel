@@ -1,0 +1,132 @@
+{
+  "purpose": "object_recognition",
+  "split": "train",
+  "generated_at": "2026-08-25T13:20:00+0900",
+  "generated_by": "scripts/build_splits.py from data/reconciliation/eligibility_classification.json",
+  "source_review_status": "AI_PROVISIONAL — awaiting Human eligibility review per WP-ST-3 U4 policy",
+  "family_derivation_rule": "synthetic → prefix-before-numeric-suffix; wikimedia_commons → per-drawing-id (each is own family)",
+  "split_algorithm": "per-source proportional: sort families by sha256(family_id) asc; 1st→test, 2nd→val, rest→train per source (guarantees non-empty val/test on small corpus)",
+  "entries": [
+    {
+      "drawing_id": "synth_apt_kr_balcony_01",
+      "family_id": "synthetic::synth_apt_kr_balcony",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_kr_balcony_02",
+      "family_id": "synthetic::synth_apt_kr_balcony",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_kr_balcony_03",
+      "family_id": "synthetic::synth_apt_kr_balcony",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_simple_01",
+      "family_id": "synthetic::synth_apt_simple",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_simple_02",
+      "family_id": "synthetic::synth_apt_simple",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "synth_apt_simple_03",
+      "family_id": "synthetic::synth_apt_simple",
+      "split": "train",
+      "source": "synthetic_self_generated",
+      "license": "public",
+      "domain": "kr",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_00092_bn--retail_coal_pocket--location_plan--geddes_yard--syracuse_ny_f00864ff-f",
+      "family_id": "wikimedia_commons::wm_00092_bn--retail_coal_pocket--location_plan--geddes_yard--syracuse_ny_f00864ff-f",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊨",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_00156_ba001--hoboken_ferry_company--foundations_against_property_line_showing_pr",
+      "family_id": "wikimedia_commons::wm_00156_ba001--hoboken_ferry_company--foundations_against_property_line_showing_pr",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "public",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊨",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a04_-_denah_lantai_1_model_1",
+      "family_id": "wikimedia_commons::wm_a04_-_denah_lantai_1_model_1",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_a_floor_plan_of_oulu_s_seurahuone_1938_jokakal3b-4037",
+      "family_id": "wikimedia_commons::wm_a_floor_plan_of_oulu_s_seurahuone_1938_jokakal3b-4037",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "CC-BY",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_affordable_palace_opposite_office_floorplan1-500",
+      "family_id": "wikimedia_commons::wm_affordable_palace_opposite_office_floorplan1-500",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "CC-BY",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    },
+    {
+      "drawing_id": "wm_all_hands_2019_bently_reserve_second_floor",
+      "family_id": "wikimedia_commons::wm_all_hands_2019_bently_reserve_second_floor",
+      "split": "train",
+      "source": "wikimedia_commons",
+      "license": "CC-BY-SA",
+      "domain": "global",
+      "eef_tag_at_split_time": "⊢",
+      "classification_review_status": "AI_PROVISIONAL"
+    }
+  ],
+  "count": 12
+}

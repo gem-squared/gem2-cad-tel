@@ -1,0 +1,252 @@
+{
+  "$defs": {
+    "AnnotationGeometry": {
+      "additionalProperties": false,
+      "description": "Class-appropriate geometry per spec \u00a74.2. Kind chosen per AnnotationClass.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "mask",
+            "polygon",
+            "bbox",
+            "polyline",
+            "quad"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "mask_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mask Ref"
+        },
+        "vertices": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vertices"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bbox"
+        },
+        "polyline": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Polyline"
+        },
+        "extension_lines": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extension Lines"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "AnnotationGeometry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One annotation on one drawing.\n\nAmbiguous / illegible instances stay marked ambiguous \u2014 never forced into a\npositive class. AI-only annotations (review_status in {unreviewed, ai_silver})\nare forbidden from frozen test/val splits per WP-ST-3 U4 labeling policy.",
+  "properties": {
+    "drawing_id": {
+      "title": "Drawing Id",
+      "type": "string"
+    },
+    "annotation_id": {
+      "title": "Annotation Id",
+      "type": "string"
+    },
+    "class": {
+      "enum": [
+        "wall_wet",
+        "wall_dry",
+        "wall_structural",
+        "door",
+        "window",
+        "balcony_sash",
+        "inspection_hatch",
+        "dimension_text",
+        "room_label",
+        "space_polygon",
+        "wall",
+        "dimension_line",
+        "scale_anchor_evidence"
+      ],
+      "title": "Class",
+      "type": "string"
+    },
+    "geometry": {
+      "$ref": "#/$defs/AnnotationGeometry"
+    },
+    "transcription": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Transcription"
+    },
+    "attachment_span_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Attachment Span Ref"
+    },
+    "association_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Association Ref"
+    },
+    "ambiguity_flag": {
+      "default": "clear",
+      "enum": [
+        "clear",
+        "ambiguous",
+        "illegible",
+        "out_of_scope"
+      ],
+      "title": "Ambiguity Flag",
+      "type": "string"
+    },
+    "label_producer": {
+      "enum": [
+        "human",
+        "ai_claude",
+        "ai_codex",
+        "ai_approved_vision_pipeline",
+        "programmatic_synthetic"
+      ],
+      "title": "Label Producer",
+      "type": "string"
+    },
+    "tool": {
+      "title": "Tool",
+      "type": "string"
+    },
+    "tool_version": {
+      "title": "Tool Version",
+      "type": "string"
+    },
+    "review_status": {
+      "default": "unreviewed",
+      "enum": [
+        "unreviewed",
+        "ai_silver",
+        "human_reviewed",
+        "human_double_reviewed"
+      ],
+      "title": "Review Status",
+      "type": "string"
+    },
+    "reviewer_identity_or_role": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewer Identity Or Role"
+    },
+    "annotation_digest": {
+      "title": "Annotation Digest",
+      "type": "string"
+    }
+  },
+  "required": [
+    "drawing_id",
+    "annotation_id",
+    "class",
+    "geometry",
+    "label_producer",
+    "tool",
+    "tool_version",
+    "annotation_digest"
+  ],
+  "title": "AnnotationRecord",
+  "type": "object"
+}

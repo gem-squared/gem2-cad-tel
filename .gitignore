@@ -10,9 +10,7 @@
 temp/
 temp/*
 
-docs/
-docs/*
-
+# (docs/ is tracked — public technical documentation; see docs/README.md)
 
 # Test
 *.test

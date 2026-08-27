@@ -313,23 +313,33 @@ Commit 히스토리와 테스트에 가시화된 구체적 엔지니어링 실�
 
 ## 로드맵
 
-### MVP 0.2 — Expert CV CrossCheck + Page Type Guard
+### MVP 0.2 — Hybrid Floor-Plan Vision Program (계획 승인 2026-08-25)
 
-MVP 0.2의 핵심은 fine-tuning이 아니라 **expert CV cross-checking**입니다.
+MVP 0.2는 **benchmark-driven hybrid vision pipeline**으로 rule-based 데모를 확장합니다. 상세 설계는 `docs/superpowers/specs/2026-08-25-hybrid-floor-plan-vision-design.md` (Human-approved 2026-08-25). 3개의 순차 work plan으로 분해됩니다.
 
-현재의 단일 rule-based detector를 다음과 같은 expert module로 분리합니다.
+| WP | 제목 | 유닛 수 | 현재 상태 |
+|----|------|---------|-----------|
+| **WP-ST-3** | Benchmark + Annotation Foundation | 9 | IN_PROGRESS — U1/U2/U3/U6 SUCCESS · U4 FAILURE (Human 리뷰어 필요) · U5/U7/U8/U9 blocked cascading |
+| **WP-ST-4** | Hybrid Vision Experts + Cross-Checking | 9 | PENDING — WP-ST-3 U7 freeze SUCCESS 필요 |
+| **WP-ST-5** | Trust Integration + Regression + Review UI | 9 | PENDING — WP-ST-4 완료 필요 |
 
-- WallExpert
-- DoorExpert
-- WindowExpert
-- SpaceExpert
-- TextSuppressor
-- PageTypeExpert
+**WP-ST-3에서 이번 사이클에 실제로 산출된 것** (`src/cad_trust/{annotation,eval}/`, `scripts/build_splits.py|verify_split_isolation.py|check_promotion_predicate.py`, `data/{reconciliation,splits,annotations}/`):
 
-각 expert는 최종 객체를 직접 확정하지 않고, claim과 evidence만 생성합니다.
-이후 `CrossCheck_F`가 expert 간 agreement / disagreement를 바탕으로 최종 EEF tag와 refusal 사유를 결정합니다.
+- **Corpus reconciliation** — 42/42 샘플 SHA-256 검증, 8 orphan provenance는 Strategy C로 **비파괴 격리** (삭제하지 않고 `ORPHAN_EXCLUDED` 태그). 42+8 도면을 {SUPPORTED_FLOOR_PLAN(20), GUARD_NEGATIVE(8), GUARD_AMBIGUOUS(14), ORPHAN_EXCLUDED(8)}로 분류 (AI-provisional, EEF 태그별 표시, Human 리뷰 대기).
+- **Annotation schema** — Pydantic `AnnotationRecord`가 기존 `ObjectType` 10개를 **verbatim 보존** + `wall`(generic) / `dimension_line` / `scale_anchor_evidence` 추가. LabelMe round-trip adapter 포함.
+- **Two-manifest split discipline** — object-recognition (train 12 / val 4 / test 4, 8/2/2 families) + guard (positive 20 / negative 8 / ambiguous 14). Family isolation은 `scripts/verify_split_isolation.py` (exit 0) 로 검증. 6개 SHA-256 freeze hash 기록.
+- **Metrics + promotion predicate** — 9개 metric family (mask/polygon IoU, instance recall, boundary quality, topology, mAP, CER, dimension association, false-anchor-rate, risk-vs-coverage) + 3-state promotion machine `{PASS, WAIVER_REQUIRED, FAIL}` implementing all 5 machine-evaluable §5.3 clauses.
 
-특히 mixed-sheet 도면에서는 elevation, section, floor plan 영역을 구분해 over-detection을 줄이고, UI에서는 각 expert가 어떤 근거로 후보를 승인·거부·보류했는지 확인할 수 있도록 합니다.
+**하드 블록** — WP-ST-3 U4 (AI-assisted annotation production) 는 **의도된 실패**입니다: `AI-only annotations CANNOT become frozen benchmark truth` invariant가 설계대로 동작하여, 위임된 Human 리뷰어 없이는 val/test annotation을 승격시키지 않습니다. Unblock 옵션 4가지는 `data/annotations/README.md`에 문서화.
+
+**Architectural 원칙** (spec + CD Mission Directive 2026-08-25 적용):
+- FloorPlanGuard → typed `GuardResult`, expert → typed candidate, fusion → typed `FusedVisionResult` — 오직 WP-ST-5 U1이 `FusedVisionResult` → 공개 `EngineOutput`으로 매핑.
+- Scale anchor는 spatial 연결된 ≥2개 anchor 일치 시에만 승인 (Cartesian all-vs-all 금지).
+- Bake-off는 학습형 expert당 ≤2 후보, val split 전용 — frozen test는 selection/threshold/augmentation/calibration/checkpoint 어디에도 사용하지 않음.
+- `EngineOutput` 진화는 strictly additive: 기존 10개 `ObjectType` 문자 그대로 보존, `wall` (generic) 추가만.
+- 프로모션 결정 유닛은 recording only (`APPROVED`/`REJECTED`/`APPROVED_WITH_WAIVER`) — production rollout은 별도 승인된 배포 WP로 분리.
+
+### MVP 0.2 — VLM_Verify on ⊬ crops only (BYO key)
 
 ### MVP 0.2 — VLM_Verify on ⊬ crops only (BYO key)
 
@@ -356,6 +366,8 @@ MVP 0.2의 핵심은 fine-tuning이 아니라 **expert CV cross-checking**입니
 - **v0.1.6** — 2026-06-14 · 3 unit · ash_pits Wikimedia 단면도를 기본 데모로 + 메인 패널 BYO 프롬프트 (상단 banner + 거부 영역 발생 시 post-run callout) + Vultr VPS 라이브 재배포
 
 8개 work plan(`WP-ST-1` ~ `WP-ST-8`)이 `COMPLETED|SUCCESS` 상태이며, 일부는 `/archive-work` 대기 중.
+
+**v0.2 program in-flight (2026-08-25~)** — `WP-ST-3`은 4/9 SUCCESS + 1/9 FAILURE (Human 리뷰어 대기) 상태로 halt. `WP-ST-4`/`WP-ST-5`는 `WP-ST-3` U7 freeze SUCCESS를 기다립니다. 자세한 내용은 위 `MVP 0.2` 로드맵 섹션 참고.
 
 ---
 
