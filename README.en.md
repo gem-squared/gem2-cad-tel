@@ -4,310 +4,112 @@
 
 # CAD Trust Engine Lite
 
-**v0.1.6** · Portfolio · Auditable CAD floor-plan recognition for Korean ConTech 적산 · Python 3.11+ · MIT-equivalent (proprietary source, public-licensed corpus)
+**Auditable Floor-Plan Intelligence for Quantity Takeoff (적산)**
 
-🟢 **Live demo: [cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — click through directly in your browser. First OCR call may be slow (~1-2 min) while PaddleOCR downloads models on cold start.
+*Designed and implemented by David Seo of GEM².AI*
 
-> A detector gives answers.
-> A **CAD Trust Engine** gives **answers, evidence, uncertainty, refusal, and review path** — and remembers them.
+## 🟢 Live Demo
 
-PNG/PDF/JPG architectural floor plan → **per-field EEF-tagged JSON** + Streamlit review UI + SQLite audit trail.
-
----
-
-## TL;DR
-
-This is not "another OpenCV pipeline." It's a small, working **trust engine** for CAD drawing recognition under cost risk. The wedge is not detection accuracy — it's **auditable measurement that knows what it doesn't know**.
-
-Built end-to-end in 5 autonomous WP cycles (30+ commits, 5 tagged releases, 148 tests, 50-drawing corpus, live VPS deploy). Every detection carries three orthogonal epistemic claims (type / geometry / measurement), explicit refusal regions for uncommittable areas, and a full audit trail of every run / refusal / policy fire / epistemic distribution.
+**[https://cad-tel.gemsquared.ai](https://cad-tel.gemsquared.ai)** — one-click browser access. Upload a PNG / JPG / PDF drawing and inspect the result in the review UI. The first OCR invocation may take 1–2 minutes as models load.
 
 ---
 
-## 🧱 Tech stack — what was used, and why for this domain
+## 1. The Problem
 
-| Layer | Choice | Why this choice for this domain |
-|-------|--------|------|
-| Language | **Python 3.11+** | Shortest path combining CV + OCR + UI. PEP 585/604 type hints consistently (`list[T]` / `T \| None`). |
-| Schema | **Pydantic v2** | `model_validator` enforces Measurement_Policy at the contract boundary — an invalid `EngineOutput` cannot be constructed. |
-| Classical CV | **OpenCV** (`opencv-python-headless`) | Canny + HoughLinesP + parallel-pair fusion + HoughCircles cover rule-based detection in v0.1.x. Headless build runs in containers / Streamlit Cloud / VPS. |
-| OCR | **PaddleOCR (ko + en)** | Reliable on both Korean room labels and Latin dimension text — single model covers both. |
-| PDF | **`pdf2image` + Poppler** | Stable page rasterization; multi-page PDFs warn explicitly and ingest page 0. |
-| Image I/O | **Pillow** | Already a PaddleOCR dep; covers PNG/JPG/PDF preview. |
-| Review UI | **Streamlit 1.58** | Fast iteration + native caching. Run Engine / Past Runs (Audit) split into two tabs. |
-| Audit DB | **`sqlite3`** (stdlib) | Zero new deps. `PRAGMA user_version` gates schema migrations. |
-| CLI | **`argparse`** (stdlib) | `python -m cad_trust.audit list-runs / show-run / refusals / stats` — query the audit DB without writing SQL. |
-| Tests | **`pytest`** | 148 tests; fixtures + parametrize + AST-based invariant checks. 145 fast + 3 corpus-wide smoke. |
-| Corpus crawl | **`urllib.request`** (stdlib) | Zero new deps. Polite UA, 0.5s rate-limit, sha256 dedup, license-mapping refusal. |
-| Container | **Docker + docker-compose** | Single-host deploy. PaddleOCR/OpenCV system deps (`libgl1`, `libglib2.0-0`) sealed in the image. |
-| Reverse proxy | **Caddy 2** | Auto-TLS via Let's Encrypt when DOMAIN set, plain HTTP fallback otherwise — both modes validated. |
-| Deploy host | **Vultr VPS** (Debian/Ubuntu, $6/mo) | 1GB RAM + 2GB swap proven to run PaddleOCR + Streamlit + audit. Live at [`cad-tel.gemsquared.ai`](https://cad-tel.gemsquared.ai). |
-| Security · LLM key | **BYO (Bring-Your-Own)** | No LLM API key in server-side env. The visitor pastes into the UI sidebar; key lives only in `st.session_state`; gone when the tab closes. v0.2 VLM_Verify activates only through this path. |
+Floor-plan recognition results flow directly into **material quantity and cost decisions**. Misreading a single wall or miscomputing a dimension propagates straight into material ordering and cost estimates. Most such errors do not surface until construction is already underway.
 
-**Deliberately not used** (rationale in [`docs/README.md`](docs/README.md)):
-- ❌ **YOLO / RT-DETR fine-tune** — no labeled corpus yet (v0.3 territory).
-- ❌ **VLM as primary detector** — would handle 20,000+ raw HoughP candidates per drawing inefficiently. Expert CV cross-checking + page-type guard come first (v0.2). VLM enters only as a *re-checker* on `⊬`-tagged crops.
-- ❌ **DWG native ingest** — needs ODA / LibreDWG dep decision (v0.3 territory).
-- ❌ **Extra deps for audit** — stdlib `sqlite3` keeps the subsystem zero-cost to install.
+Chasing the "detect more, detect more accurately" objective favored by generic computer-vision benchmarks does not address this risk. In the construction domain, **a confidently-wrong number is a bigger liability than an unrecognized drawing**. An honest-but-empty result can be revisited by a reviewer; a confidently-wrong result flows through procurement before anyone notices.
 
----
+This engine exists to expose, alongside every detection, the **evidence, uncertainty, and review path** behind each judgment — a trust surface shaped by the construction domain rather than by generic CV metrics. It does not replace, and does not attempt to replace, a professional quantity surveyor's judgment. Its job is to surface results honestly enough that a surveyor can audit and review them with confidence.
 
-## 🛠 How to build — three paths
+## 2. How It Solves the Problem
 
-### Path 1 · Local dev (fastest entry)
+Four norms are enforced at schema level. Each of them is visible to a reviewer in the live demo. The internal rules that implement them are not disclosed.
+
+- **Separated epistemic claims** — every object records its judgment about *what it is* (type), *its shape* (geometry), and *its physical measurement* **independently**. Confidence on one does not automatically transfer to the others. The review UI visually distinguishes the three judgments per object.
+- **No forced judgment** — regions where evidence is insufficient are not pushed out as low-confidence detections; they are surfaced as **explicit refusal regions**. In the review UI these appear as overlays on the source drawing, giving the reviewer an immediate signal of "this needs a human eye."
+- **Measurement safety gate** — no physical-unit (mm) value is emitted for a drawing without a reliable scale reference. Pixel values may remain as diagnostic evidence, but the output contract itself refuses to convert them to millimeters without a supporting scale commitment.
+- **Auditability** — run results, refusals, and policy events all persist in an audit store. A reviewer can inspect not only a single drawing's result but error and refusal patterns across many runs over time.
+
+The end-to-end flow is one line:
+
+> Floor-plan input → trust-aware analysis → reviewable result + structured output + audit trail
+
+## 3. Design Principles
+
+Five principles shape how this engine behaves. The internal algorithms, thresholds, and model choices are not disclosed, but the principles are — a reviewer or collaborator should be able to understand *why* the system behaves the way it does.
+
+- **Refusal is a first-class output** — refusal is neither silence nor a placeholder; it is a legitimate output. Low coverage is acceptable; confident-wrong detections are not allowed into the review pipeline.
+- **Evidence granularity is per-claim** — a single object carries three independent judgments (identity, geometry, measurement). Collapsing them into one confidence score would destroy the trust surface.
+- **Physical units gate on scale evidence** — no mm value is produced until a scale reference is independently established. This is not a convention — the schema enforces it.
+- **Every uncertain claim is annotated** — a judgment that lacks direct evidence carries the shape of that missing evidence (either an explicit basis for the extrapolation or an explicit knowledge gap). Bare uncertainty is rejected at the schema layer.
+- **Provenance is enforced, not implied** — evaluation assets are used only when their source and license are verified. License-uncertain sources are excluded explicitly rather than absorbed silently.
+
+## 4. Current Result
+
+**Stable version (v0.1.6)**
+
+- Classical CV / OCR vertical slice is shipped and running as the live demo
+- Public output contract (`EngineOutput`) enforced by Pydantic
+- Review UI + audit CLI
+- Supported input: PNG / JPG / JPEG / rasterized PDF (floor plans). Elevations, sections, detail sheets, MEP-only sheets, and photographs are not supported
+- No physical-unit (mm) value is produced without a reliable scale reference
+- Repository snapshot (as of 2026-08-28)
+  - 42 sample images
+  - 50 provenance records (of which 8 are orphan records preserved non-destructively — no matching sample file)
+  - 19 test files · 137 test functions
+
+**Release timeline (domain milestones)**
+
+| Release | Date | Milestone |
+|---------|------|-----------|
+| v0.1.0 | 2026-06-05 | End-to-end analysis + review-UI vertical slice |
+| v0.1.1 | 2026-06-05 | Audit subsystem introduced — run and refusal history persisted |
+| v0.1.2 | 2026-06-05 | Real-drawing corpus adopted (beyond synthetic fixtures) |
+| v0.1.3 | 2026-06-06 | Provenance and license coverage broadened |
+| v0.1.4 | 2026-06-06 | Hosted demo shipped on containerized runtime |
+| v0.1.5 | 2026-06-14 | Deployment discipline + BYO-key visitor pattern |
+| v0.1.6 | 2026-06-14 | Default-demo tuning + review-UI polish (current stable) |
+
+**v0.2 improvement program (in progress)**
+
+- A benchmark-driven improvement foundation and stronger data governance are under development
+- Because Human-reviewed ground truth and a frozen benchmark are not yet in place, **no improved recognition accuracy is claimed**
+- Internal pipeline decomposition, candidate models, model-selection criteria, and evaluation weights are not disclosed
+
+## 5. Technology Stack (Category-Level)
+
+- **Language**: Python 3.11+
+- **Computer vision / OCR**: proven open-source CV + multilingual OCR (Korean + Latin scripts)
+- **Schema / typed contract**: Pydantic v2
+- **Review UI**: Streamlit
+- **Audit store**: SQLite (standard library)
+- **PDF handling**: page-level rasterization
+- **Delivery**: Docker-based container
+
+Specific algorithm combinations, thresholds, post-processing rules, model-selection criteria, and scale-judgment methods are not disclosed.
+
+## 6. Minimal Local Installation (for technical verification)
+
+The hosted demo is the primary path. To reproduce locally:
 
 ```bash
-# 1. Clone
-git clone https://github.com/gem-squared/gem2-cad-tel.git gem2-vision
-cd gem2-vision
-
-# 2. venv + dev deps (uv preferred — plain pip also fine)
-uv venv --python 3.12 .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
-uv pip install -e ".[dev]"
-# (no uv?)  python3.12 -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
-
-# 3. Generate the synthetic corpus baseline (12 drawings)
-.venv/bin/python scripts/build_corpus.py
-
-# 4. (Optional) extend the corpus from Wikimedia Commons (~22 more PNGs/JPGs/PDFs)
-.venv/bin/python scripts/crawl_corpus.py --target 25
-
-# 5. Full fast test suite (~97s; 145 tests; skips the 10-min corpus-wide smoke)
-.venv/bin/python -m pytest --ignore=tests/test_corpus_pipeline_smoke.py
-
-# 6. Launch the demo UI (http://localhost:8501)
-.venv/bin/python -m streamlit run ui/app.py
+pip install -e .
+streamlit run ui/app.py
 ```
 
-Requirements: Python 3.11+, ~2GB RAM, Poppler (called by `pdf2image`) — `brew install poppler` / `apt install poppler-utils`.
+- Open `http://localhost:8501` in a browser and upload a drawing
+- The first run downloads OCR models — expect a delay
+- Deployment scripts, container topology, and reverse-proxy configuration are not included in the public repository
 
-### Path 2 · Docker (single compose-up build)
+## 7. License / IP
 
-```bash
-cd deploy
-docker compose up --build
-# → http://localhost:8501
-```
-
-`deploy/docker-compose.yml` brings up the Streamlit container + Caddy reverse proxy together. The `audit_data` named volume survives `down`/`up`.
-
-The image bundles: Python 3.12-slim + paddleocr + opencv-headless + system deps (`libgl1`, `libglib2.0-0`) + this repo's source + the 50-drawing corpus.
-
-### Path 3 · VPS live deploy (Vultr / Debian / Ubuntu)
-
-The 4-command flow that stood up `cad-tel.gemsquared.ai`:
-
-```bash
-# 1. Register your SSH key on the VPS (one-shot)
-PUBKEY=$(cat ~/.ssh/id_ed25519_aio_deploy.pub)
-ssh user@your.vps.ip "echo '$PUBKEY' >> ~/.ssh/authorized_keys"
-
-# 2. Bootstrap the host (idempotent — Docker + ufw + 2GB swap + /opt/cad-tel/)
-ssh -i ~/.ssh/id_ed25519_aio_deploy user@your.vps.ip 'bash -s' < deploy/bootstrap.sh
-
-# 3. Deploy (no domain = IP only; with domain = Let's Encrypt auto-TLS)
-./deploy/deploy.sh user@your.vps.ip                              # IP access
-./deploy/deploy.sh user@your.vps.ip --domain cad-tel.example.com # Domain + TLS
-
-# 4. Auto-verify: confirms HTTP 200 + body contains "CAD Trust Engine", then prints the URL
-```
-
-Full prerequisites, rollback flow, and troubleshooting in [`docs/DEPLOY.md`](docs/DEPLOY.md).
+- **Source code license**: `Proprietary` (per `pyproject.toml`)
+- Corpus assets carry per-item public licenses (CC-BY, CC-BY-SA, public, etc.); the source-code license and the corpus licenses are distinct
+- The repository follows a **capability-public / recipe-protected** strategy: capability is verifiable via the demo and the public output contract, while internal recipes, thresholds, and routing rules are not published
 
 ---
 
-## Why this approach is different for 적산 (quantity takeoff)
-
-CAD drawing recognition for construction is **not an object-detection problem**. It is an **auditable measurement problem under cost risk**.
-
-A misrecognized wall means a wrong material order — millions of KRW. The cost system cannot detect a confidently-wrong measurement until the construction phase. So the engine's primary deliverable is not "detections" — it is a **per-claim trust surface** that lets a reviewer query:
-
-- *what* was detected,
-- *why* the engine thinks so (evidence chain),
-- *how confident* it is per field (type / geometry / measurement separately),
-- *what it refused to commit on* (with the reason),
-- and the *historical pattern* of those refusals across the whole corpus.
-
-That auditability surface is what makes a recognition pipeline safe to wire into a 산출내역서 system.
-
----
-
-## EEF — Epistemic Evaluation Framework
-
-Every important claim the engine makes carries one of four tags. The tags are not confidence scores — they are **kinds of knowledge**.
-
-| Tag | Name | When to use | Mandatory field |
-|:---:|------|-------------|-----------------|
-| ⊢ | **GROUNDED** | direct evidence (OCR hit, exact geometry match) | `evidence` |
-| ⊨ | **INFERRED** | derived from ⊢ claims with a visible chain | `evidence`, `derivation_chain` (optional) |
-| ⊬ | **EXTRAPOLATED** | beyond evidence — could be wrong | `evidence` + **`basis`** (REQUIRED) |
-| ⊥ | **UNKNOWN** | knowledge gap, stops the inference chain | **`gap`** (REQUIRED) |
-
-`⊬` and `⊥` are **structurally enforced** by the Pydantic schema validator. The contract refuses to accept an extrapolation without a stated `basis`, and refuses to accept an unknown without a stated `gap`. You cannot bluff at the schema layer.
-
-### Per-field epistemic — three orthogonal claims per object
-
-Every detected object carries **three independent epistemic marks**:
-
-| Mark | Question it answers |
-|------|---------------------|
-| `type_epistemic` | Is this *really* a wall / door / window / ...? |
-| `geometry_epistemic` | Is this the right *shape and extent*? |
-| `measurement_epistemic` | Is the mm *measurement* reliable? |
-
-The engine may be *confident this is a wall* (⊨), *confident of its pixel shape* (⊢), and *yet refuse to claim it is 4,200 mm long* (⊥). Conflating these collapses the trust surface — and that collapse is what makes black-box detectors unsafe for 적산 systems.
-
-**Real example** from the audit DB:
-
-```json
-{
-  "object_id": "obj_0042",
-  "type": "wall_structural",
-  "type_epistemic":        { "tag": "⊨", "evidence": [{"source":"opencv_line_pair","signal":"parallel pair gap=12px"}] },
-  "geometry_epistemic":    { "tag": "⊨", "evidence": [{"source":"opencv_line_pair","signal":"endpoints from paired Hough"}] },
-  "measurement_mm":        null,
-  "measurement_epistemic": { "tag": "⊥", "gap": "no scale_anchor; mm refused per Measurement_Policy" },
-  "review_status":         "needs_human"
-}
-```
-
----
-
-## Load-bearing invariants
-
-The engine refuses to violate these — they are validator-enforced at the schema layer.
-
-### Measurement_Policy
-
-> **Never emit `measurement_mm` unless `scale_anchor.detected = True`.**
-
-When the engine cannot extract a reliable px-to-mm conversion factor (by matching detected dimension text against wall lengths), it refuses mm conversion across **all** objects AND aggregates. The `EngineOutput.model_validator` enforces this — it is impossible to construct an `EngineOutput` that violates the policy. A pixel length may appear in `evidence` as a diagnostic, but **never** as mm output.
-
-### Refusal_Over_Bluff
-
-When evidence is insufficient (fewer than 2 supporting signals), the engine emits a `refusal_candidate` rather than a low-confidence detection. These promote to top-level `refusals` in `EngineOutput`. Low coverage is acceptable; **confident-wrong detections are not**. Real corpus example: on the most complex Wikimedia drawing, the engine produced **20,267 objects + 140 explicit refusals + 747 windows-or-doors flagged** for review.
-
-### Refusal_Over_Bluff_Across_Time (v0.1.1 audit)
-
-The audit DB extends this invariant in time. Every refusal accumulates into a SQLite ledger with `run_id` linkage so a reviewer can query *patterns* of refusals across the entire corpus — not just per-drawing snapshots.
-
-### License_Discipline (v0.1.2/3 corpus)
-
-Same posture applied to corpus building. Every sample carries a `ProvenanceRecord` with `sha256` + explicit license tag. **No source with unmappable license enters `data/samples/`** — uncategorized sources surface in an `excluded` log, never silently included. The v0.1.3 license fix (`pd` + `cc0` + `public-domain` exact-match) unlocked +16 public-domain drawings while preserving the discipline (still 11 candidates refused for unmappable licenses).
-
----
-
-## What's built (v0.1.6 — 7 tagged releases)
-
-| Release | Lands | Highlights |
-|--------:|------:|------------|
-| **v0.1.0** | 2026-06-05 | 9-unit pipeline: Ingest → Geometry → OCR → Symbols → Compose+Aggregate + Streamlit review UI + 12-drawing synthetic corpus + 53 tests |
-| **v0.1.1** | 2026-06-05 | Audit subsystem: SQLite schema + AuditContext + 5-stage instrumentation + CLI (`list-runs`/`show-run`/`refusals`/`stats`) + Streamlit "Past Runs" tab + 91 tests |
-| **v0.1.2** | 2026-06-05 | Wikimedia Commons crawl: +22 real drawings (License_Discipline refused 27 unmappable) + JPG ingest support + 130 tests + 100% pipeline success on 32 ingestable real-world drawings |
-| **v0.1.3** | 2026-06-06 | License mapping fix (exact-vs-prefix matcher) unlocked +16 PD drawings → 50 total + Streamlit preview pane right of the Drawing dropdown + 148 tests |
-| **v0.1.4** | 2026-06-06 | Vultr VPS live deploy (Docker + host Caddy integration) → public URL `cad-tel.gemsquared.ai` |
-| **v0.1.5** | 2026-06-14 | Portfolio reframing — README tech-stack/build emphasis + BYO LLM-key pattern (UI sidebar scaffold + `docs/DEPLOY.md` secrets-section rewrite) |
-| **v0.1.6** | 2026-06-14 | ash_pits Wikimedia cross-section default demo + main-panel BYO prompts (top banner + contextual post-run callout when refusals present) + live VPS redeploy |
-
-### Concrete numbers
-
-- **5-stage pipeline**: Ingest → Geometry → OCR → Symbol → Compose+Aggregate
-- **148 tests** across 9 modules (145 fast + 3 corpus-wide smoke)
-- **50-drawing corpus** (12 synthetic + 38 Wikimedia, all with provenance + sha256)
-- **30+ git commits** on `main`, **5 tagged releases**
-- **6 WP-level invariants** enforced across the codebase
-- **100% pipeline success** on 32 ingestable real drawings; object counts 11–20,267; refusal counts 0–931 per drawing
-
----
-
-## Architecture
-
-```
-PNG/JPG/PDF drawing
-       │
-       ▼  Ingest_F          → IngestResult (canonical RGB ndarray + metadata)
-       │
-       ▼  Geometry_F        → lines / contours / wall_candidates  (OpenCV Canny + HoughLinesP + parallel-pair fusion)
-       │
-       ▼  OCR_F             → texts + dim/label classification    (PaddleOCR ko + en + regex classifier)
-       │
-       ▼  Symbol_F          → doors / windows / spaces + refusal_candidates  (HoughCircles + double-line + wall_proximity)
-       │
-       ▼  Compose_F+Agg_F   → EngineOutput (full schema)
-       │                         ↳ objects (per-field EEF: type / geometry / measurement)
-       │                         ↳ aggregates (with ⊬/⊥ taint warnings)
-       │                         ↳ refusals  (first-class output)
-       │                         ↳ scale_anchor (gates all mm output)
-       │
-       ▼
-   Streamlit Review UI   +   SQLite Audit DB   +   CLI queries
-   (preview + overlay         (runs, stage_events,    (list-runs /
-    + evidence panel +         refusals_log,          show-run /
-    Past Runs tab)             policy_fires,          refusals /
-                               epistemic_counts)      stats)
-```
-
-The output contract ([`src/cad_trust/schema.py`](src/cad_trust/schema.py), [`docs/OUTPUT_CONTRACT.md`](docs/OUTPUT_CONTRACT.md)) was committed **before** detection code per the `Contract_Before_Implementation` invariant — the schema gates the implementation, not the other way around.
-
----
-
-## Engineering posture (the skills exercised)
-
-Concrete engineering practices visible in the commit history and tests:
-
-- **Contract-before-implementation** — Pydantic schemas + golden JSON committed in WP-ST-1 U2 *before* any detection code; subsequent units imported from that schema rather than inventing their own
-- **Backward-compatibility as an invariant** — every release passes the previous release's full test suite (53 → 91 → 130 → 148, never going backwards)
-- **Refusal as a first-class output type** — at every layer: pipeline refuses uncommittable regions, corpus builder refuses uncategorized licenses, audit DB records the refusal trail in time
-- **Audit-first observability** — the audit subsystem (WP-ST-2) does not change pipeline contracts; it is purely additive and opt-in via an optional parameter, but it makes the trust surface historically queryable
-- **Schema-enforced invariants** — Measurement_Policy is enforced by `model_validator` at the data layer, not by convention or comment. The schema **refuses to construct** invalid outputs.
-- **TPMN unit-work discipline** — every change cycle runs the full plan → proceed → verify → archive loop documented in `.gem-squared/work-plan/` with per-unit `Acceptance` criteria
-- **Honest refusal of work I can't do** — `data/samples/` is 100% public-source-with-provenance because I deliberately did not scrape unlicensed material; documented in [`docs/CORPUS.md`](docs/CORPUS.md)
-
----
-
-## Documentation map
-
-| File | Purpose |
-|------|---------|
-| [`docs/README.md`](docs/README.md) | Engineering thesis — start here for the full TPMN argument |
-| [`docs/OUTPUT_CONTRACT.md`](docs/OUTPUT_CONTRACT.md) | Formal contract spec + Measurement Policy reference |
-| [`docs/CORPUS.md`](docs/CORPUS.md) | Corpus license posture, sources used, exclusion policy |
-| [`docs/AUDIT.md`](docs/AUDIT.md) | Audit subsystem: schema, CLI usage, example SQL queries |
-| [`docs/DEMO_SCENARIOS.md`](docs/DEMO_SCENARIOS.md) | 5 walkthrough scenarios incl. the Korean apt 적산 refusal demo |
-| [`docs/DEPLOY.md`](docs/DEPLOY.md) | VPS deploy guide (Docker + Caddy + rollback + troubleshooting) |
-| `.gem-squared/work-plan/WP-ST-1.md` … `WP-ST-6.md` | TPMN work plans — A → B \| P contracts per unit, with results |
-
----
-
-## Roadmap
-
-**MVP 0.2 — planned**
-
-- **Expert CV cross-check + Page Type guard** — refactor the single rule-based detector into expert modules (WallExpert / DoorExpert / WindowExpert / SpaceExpert / TextSuppressor / PageTypeExpert) emitting `claim` records, fused by `CrossCheck_F` into final EEF tags. UI gains per-expert vote panels. Reduces over-detection on mixed-sheet drawings (the audit DB shows 747 refusals on one drawing — the expert layer would explain *why* each refused and probably reduce many of them to clean rejects).
-- **VLM_Verify on ⊬ crops only (BYO key)** — Qwen-VL / Claude vision as a *re-checker* for extrapolated claims, never as a primary detector. The reviewer pastes their own API key into the UI sidebar; **no LLM API key is ever stored in server-side env vars**. VLM may confirm / reject / abstain. Never overrides scale_anchor policy.
-
-**MVP 0.3 — beyond**
-
-- Synthetic Korean apartment generator (preps labeled training data)
-- YOLO/RT-DETR finetuning on assembled labeled corpus
-- DWG native ingest via ODA / LibreDWG
-- Full cost-aggregate ⊬-taint propagation through 산출내역서 calculations
-- Audit-DB retention / rotation policies
-
----
-
-## Status
-
-- **v0.1.0** — 2026-06-05 · 9 units · 53 tests · `Refusal Over Bluff` introduced
-- **v0.1.1** — 2026-06-05 · 6 units · 91 tests · Audit subsystem (SQLite + CLI + Streamlit tab)
-- **v0.1.2** — 2026-06-05 · 6 units · 130 tests · Wikimedia corpus (12 → 34 drawings) + JPG ingest
-- **v0.1.3** — 2026-06-06 · 4 units · 148 tests · License fix (34 → 50) + preview pane
-- **v0.1.4** — 2026-06-06 · 6 units · Vultr VPS live deploy (`cad-tel.gemsquared.ai`) · Docker + host Caddy integration
-- **v0.1.5** — 2026-06-14 · 3 units · Portfolio reframing + BYO LLM-key pattern (README tech-stack/build emphasis, `docs/DEPLOY.md` secrets-section rewrite, `ui/app.py` BYO sidebar scaffold)
-- **v0.1.6** — 2026-06-14 · 3 units · ash_pits Wikimedia cross-section as default demo + main-panel BYO prompts (top banner + contextual post-run callout) + Vultr VPS live redeploy
-
-Eight work plans (`WP-ST-1` through `WP-ST-8`) at `COMPLETED|SUCCESS`, some awaiting `/archive-work`.
-
----
-
-*CAD Trust Engine Lite · gem-squared/gem2-cad-tel · Portfolio*
+*CAD Trust Engine Lite · v0.1.6 (stable) · v0.2 benchmark-driven upgrade in progress · David Seo of GEM².AI*
